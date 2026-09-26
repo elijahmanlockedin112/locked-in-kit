@@ -331,6 +331,57 @@
   .wins b { color: var(--ink); font-weight: 600; }
   .wins code { font-size: 0.85em; color: var(--ink); }
 
+  /* ---------- hero inventory line ---------- */
+  .inventory {
+    display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; margin-top: 26px;
+    font: 500 0.84rem/1.4 var(--mono); color: var(--muted); text-decoration: none;
+    padding: 9px 14px; border: 1px solid var(--rule); border-radius: 999px; background: var(--surface);
+  }
+  .inventory b { color: var(--accent); font-weight: 600; }
+  .inventory i { font-style: normal; opacity: .5; }
+  .inventory:hover { border-color: var(--accent); color: var(--ink); }
+
+  /* ---------- what's in the box ---------- */
+  .box {
+    display: grid; gap: 14px;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-areas: "skills agents" "skills hooks" "templates playbook";
+  }
+  .tile { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 26px 26px 28px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .tile-skills { grid-area: skills; background: var(--screen); color: var(--screen-text); border-color: var(--screen-edge); }
+  .tile-agents { grid-area: agents; }
+  .tile-hooks { grid-area: hooks; }
+  .tile-templates { grid-area: templates; }
+  .tile-playbook { grid-area: playbook; }
+  .tile-top { display: flex; align-items: baseline; gap: 14px; }
+  .tile .big {
+    font-family: var(--display); font-stretch: 125%; font-weight: 900; line-height: .8;
+    font-size: clamp(3.4rem, 7vw, 5.6rem); letter-spacing: -0.05em; color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+  .tile-skills .big { color: #8fa3ff; font-size: clamp(4.4rem, 10vw, 8rem); }
+  .tile .kind { font: 600 0.78rem/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink); }
+  .tile-skills .kind { color: #f0f1ec; }
+  .tile p { color: var(--muted); font-size: 0.97rem; max-width: 48ch; }
+  .tile-skills p { color: #b9bdb3; }
+  .chips-list { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 7px; }
+  .chips-list li {
+    font: 500 0.78rem/1 var(--mono); padding: 7px 10px; border-radius: 6px;
+    border: 1px solid var(--rule); color: var(--ink); background: var(--ground);
+  }
+  .tile-skills .chips-list li { background: transparent; border-color: #3a3f45; color: #d6d9d0; }
+  .tile-skills .chips-list li.you { background: #8fa3ff; border-color: #8fa3ff; color: #0d1022; font-weight: 600; }
+  .chips-list li.star { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .legend { display: flex; gap: 16px; font: 500 0.72rem/1 var(--mono); color: #9a9e94 !important; }
+  .legend .k { display: inline-flex; align-items: center; gap: 7px; }
+  .legend .k::before { content: ""; width: 12px; height: 12px; border-radius: 3px; border: 1px solid #5a5f66; }
+  .legend .you::before { background: #8fa3ff; border-color: #8fa3ff; }
+  .tile-playbook .link { margin-top: auto; }
+  .tile-skills .tile-foot { margin-top: auto; padding-top: 16px; border-top: 1px solid #2c3035; color: #d6d9d0; font-size: 0.93rem; }
+  @media (max-width: 820px) {
+    .box { grid-template-columns: minmax(0, 1fr); grid-template-areas: "skills" "agents" "hooks" "templates" "playbook"; }
+  }
+
   /* ---------- method loop ---------- */
   .loop { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); counter-reset: step; position: relative; }
   .loop li { counter-increment: step; padding: 0 20px 0 0; display: flex; flex-direction: column; gap: 10px; position: relative; }
@@ -407,6 +458,7 @@
           <a class="btn" href="https://payhip.com/b/lsyVE">Get the kit <span class="price-tag">$19</span></a>
           <a class="link" href="#inside">Look inside first</a>
         </div>
+        <a class="inventory" href="#kit"><b>18</b> skills <i>·</i> <b>6</b> agents <i>·</i> <b>5</b> hooks <i>·</i> <b>8</b> templates <i>·</i> <b>1</b> playbook <span aria-hidden="true">↓</span></a>
         <ul class="wins">
           <li><b>It proves its work.</b> A Stop hook runs your tests every time Claude tries to finish. If they fail, it keeps working.</li>
           <li><b>It can't wreck anything.</b> <code>rm -rf ~</code>, force-push to main and reading <code>.env</code> are blocked before they run.</li>
@@ -448,6 +500,53 @@
         <p class="term-caption"><b>Try it.</b> A simulation of what the kit's hooks and workflows do in a real session.</p>
       </div>
     </div>
+
+    <section id="kit" aria-labelledby="kit-h">
+      <div class="sec-head">
+        <div>
+          <p class="label">What's in the box</p>
+          <h2 id="kit-h">18 skills.<br>6 agents. 5 hooks.</h2>
+        </div>
+        <p>All set up for you: 43 files that drop into <code>~/.claude</code>. Here's every one, grouped by what it does for you.</p>
+      </div>
+
+      <div class="box">
+        <article class="tile tile-skills">
+          <div class="tile-top"><span class="big">18</span><span class="kind">Skills</span></div>
+          <p>Expert playbooks Claude pulls in by itself when the task matches, plus six workflows you start with one word.</p>
+          <p class="legend"><span class="k you">you type it</span><span class="k auto">loads by itself</span></p>
+          <ul class="chips-list">
+            <li class="you">/lock-in</li><li class="you">/handoff</li><li class="you">/pickup</li><li class="you">/mvp</li><li class="you">/second-opinion</li><li class="you">/cleanup</li>
+            <li>ship-it</li><li>bug-hunt</li><li>test-writer</li><li>security-pass</li><li>perf-audit</li><li>safe-refactor</li><li>db-migration</li><li>pr-writer</li><li>commit-craft</li><li>context-saver</li><li>explain-codebase</li><li>landing-page</li>
+          </ul>
+          <p class="tile-foot">Every skill that changes code ends the same way: run your real checks, show the output, and fix until they pass.</p>
+        </article>
+
+        <article class="tile tile-agents">
+          <div class="tile-top"><span class="big">6</span><span class="kind">Subagents</span></div>
+          <p>Specialists that work in their own context and report back in a paragraph, so your main session stays small.</p>
+          <ul class="chips-list"><li>code-reviewer</li><li>researcher</li><li>architect</li><li>debugger</li><li>test-runner</li><li>ui-polisher</li></ul>
+        </article>
+
+        <article class="tile tile-hooks">
+          <div class="tile-top"><span class="big">5</span><span class="kind">Hooks</span></div>
+          <p>Rules that run every time, with no exceptions and no tokens spent.</p>
+          <ul class="chips-list"><li class="star">verify-gate</li><li>block-dangerous</li><li>protect-secrets</li><li>auto-format</li><li>notify-done</li></ul>
+        </article>
+
+        <article class="tile tile-templates">
+          <div class="tile-top"><span class="big">8</span><span class="kind">CLAUDE.md templates</span></div>
+          <p>Short project memory for your stack: the commands, gotchas and checks Claude can't guess.</p>
+          <ul class="chips-list"><li>Next.js</li><li>FastAPI</li><li>Express</li><li>Expo</li><li>Chrome extension</li><li>Static site</li><li>Data science</li><li>Your global setup</li></ul>
+        </article>
+
+        <article class="tile tile-playbook">
+          <div class="tile-top"><span class="big">1</span><span class="kind">Playbook</span></div>
+          <p>The Locked In Method: the five-step loop, habits that make your limit last, and 10 prompts that work.</p>
+          <a class="link" href="#method">See the method ↓</a>
+        </article>
+      </div>
+    </section>
 
     <section id="method" aria-labelledby="method-h">
       <div class="sec-head">
@@ -790,8 +889,9 @@
     var open = (dir === "skills" || dir === "hooks") ? " open" : "";
     html += '<details' + open + '><summary><span class="name">' + dir + '/</span><span class="n">' + FILES[dir].length + '</span></summary>';
     FILES[dir].forEach(function (f) {
-      var key = dir + "/" + f[0];
-      html += '<button type="button" data-key="' + esc(key) + '" data-dir="' + dir + '">' + esc(f[0]) + (EXCERPTS[key] ? '<span class="has" aria-label="excerpt available"></span>' : "") + '</button>';
+      var name = typeof f === "string" ? f : f[0];
+      var key = dir + "/" + name;
+      html += '<button type="button" data-key="' + esc(key) + '" data-dir="' + dir + '">' + esc(name) + (EXCERPTS[key] ? '<span class="has" aria-label="excerpt available"></span>' : "") + '</button>';
     });
     html += '</details>';
   });
