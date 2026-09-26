@@ -132,7 +132,7 @@
   .hero {
     display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
     gap: clamp(28px, 5vw, 64px); align-items: center;
-    padding-block: clamp(40px, 7vw, 88px) clamp(48px, 7vw, 96px);
+    padding-block: clamp(20px, 3vw, 40px) clamp(48px, 7vw, 96px);
   }
   .eyebrow {
     font-family: var(--mono); font-size: var(--step--1); letter-spacing: 0.06em; text-transform: uppercase;
@@ -331,6 +331,31 @@
   .wins b { color: var(--ink); font-weight: 600; }
   .wins code { font-size: 0.85em; color: var(--ink); }
 
+
+  /* ---------- launch promo ---------- */
+  .promo {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 14px;
+    margin-top: 12px; padding: 10px 16px; border-radius: 10px;
+    background: var(--accent); color: var(--accent-ink); font-size: 0.95rem; text-align: center;
+  }
+  .promo-tag { font: 600 0.7rem/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 5px 8px; border-radius: 4px; background: color-mix(in srgb, var(--accent-ink) 18%, transparent); }
+  .promo s { opacity: .7; }
+  .promo b { font-weight: 700; }
+  .promo .code {
+    font: 700 0.9rem/1 var(--mono); letter-spacing: .06em; cursor: pointer;
+    padding: 5px 9px; border-radius: 5px; border: 1.5px dashed currentColor;
+    background: transparent; color: inherit;
+  }
+  .promo .code:hover { background: color-mix(in srgb, var(--accent-ink) 14%, transparent); }
+  .promo-hint { font-size: 0.8rem; opacity: .85; }
+  .btn s, .price-tag s { opacity: .6; margin-right: 4px; }
+  .code-note { margin-top: 14px; font-size: var(--step--1); color: var(--muted); }
+  .code-note b { font-family: var(--mono); color: var(--accent); letter-spacing: .04em; }
+  .buy h2 .was { display: block; font-size: 0.32em; font-weight: 600; letter-spacing: -0.02em; color: var(--muted); text-decoration: line-through; margin-bottom: 6px; }
+  .buy h2 .launch-line { color: var(--accent); font-weight: 600; }
+  .buy h2 .launch-line b { font-family: var(--mono); }
+  @media (max-width: 600px) { .promo-hint { display: none; } }
+
   /* ---------- hero stats row (visible without scrolling) ---------- */
   .stats {
     display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: 28px; max-width: 560px;
@@ -450,6 +475,11 @@
 </head>
 <body>
 <div class="shell">
+  <div class="promo" role="note">
+    <span class="promo-tag">Launch offer</span>
+    <span>30% off with code <button type="button" class="code" data-copy-code>LAUNCH</button> &nbsp;<s>$19</s> <b>$13.30</b></span>
+    <span class="promo-hint" data-copy-hint>Click the code to copy it. It's also copied when you click Get the kit.</span>
+  </div>
 
   <header class="bar">
     <a class="mark" href="#top" aria-label="Locked In Kit home">
@@ -458,7 +488,7 @@
     </a>
     <div class="bar-meta">
       <span class="mono hide-sm">v1.0 · 43 files · for Claude Code</span>
-      <a class="btn btn-sm" href="https://payhip.com/b/lsyVE">Get the kit · $19</a>
+      <a class="btn btn-sm" href="https://payhip.com/b/lsyVE">Get the kit · <s>$19</s> $13.30</a>
     </div>
   </header>
 
@@ -469,7 +499,7 @@
         <h1>Stop babysitting<span class="thin">Claude Code.</span></h1>
         <p class="lede">Claude can't say "done" until your tests pass, can't touch your secrets, and uses less of your limit. Copy one folder into <code>~/.claude</code> and you're set up in two minutes.</p>
         <div class="cta-row">
-          <a class="btn" href="https://payhip.com/b/lsyVE">Get the kit <span class="price-tag">$19</span></a>
+          <a class="btn" href="https://payhip.com/b/lsyVE">Get the kit <span class="price-tag"><s>$19</s> $13.30</span></a>
           <a class="link" href="#inside">Look inside first</a>
         </div>
         <a class="stats" href="#kit" aria-label="What's inside: 18 skills, 6 agents, 5 hooks, 8 templates, 1 playbook. See everything.">
@@ -717,7 +747,7 @@
 
     <section id="buy" aria-labelledby="buy-h">
       <div class="buy">
-        <h2 id="buy-h">$19<small>One payment. That's about three days of a Max 20x plan, for a setup you'll use every day.</small></h2>
+        <h2 id="buy-h"><span class="was">$19</span>$13.30<small class="launch-line">With launch code <b>LAUNCH</b> (30% off). Enter it at checkout; clicking the button below copies it for you.</small><small>One payment. That's about three days of a Max 20x plan, for a setup you'll use every day.</small></h2>
         <div>
           <ul class="buy-list">
             <li><span>Skills that load when the task matches</span><span>12</span></li>
@@ -728,7 +758,7 @@
             <li><span>The Locked In Method playbook</span><span>1</span></li>
             <li><span>Future additions to the kit</span><span>free</span></li>
           </ul>
-          <a class="btn" href="https://payhip.com/b/lsyVE">Get Locked In <span class="price-tag">$19</span></a>
+          <a class="btn" href="https://payhip.com/b/lsyVE">Get Locked In <span class="price-tag"><s>$19</s> $13.30</span></a>
           <p class="fine">If it doesn't save you time, ask within 14 days for a full refund.</p>
         </div>
       </div>
@@ -964,6 +994,30 @@
     if (b) show(b.getAttribute("data-key"), b.getAttribute("data-dir"));
   });
   show("skills/lock-in/SKILL.md", "skills");
+
+
+  /* ================= launch code copy ================= */
+  var CODE = "LAUNCH";
+  function copyCode() {
+    try { if (navigator.clipboard) navigator.clipboard.writeText(CODE).catch(function () {}); } catch (e) {}
+  }
+  document.querySelectorAll('a[href*="payhip.com"], a[href="https://payhip.com/b/lsyVE"]').forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) { copyCode(); return; }
+      e.preventDefault();
+      var href = a.href, gone = false;
+      function go() { if (!gone) { gone = true; location.href = href; } }
+      try { navigator.clipboard.writeText(CODE).then(go, go); } catch (x) { go(); }
+      setTimeout(go, 400);
+    });
+  });
+  var codeBtn = document.querySelector("[data-copy-code]"), hint = document.querySelector("[data-copy-hint]");
+  if (codeBtn) codeBtn.addEventListener("click", function () {
+    try {
+      navigator.clipboard.writeText(CODE).then(function () { if (hint) hint.textContent = "Copied. Paste it in the coupon field at checkout."; },
+        function () { if (hint) hint.textContent = "Type LAUNCH in the coupon field at checkout."; });
+    } catch (e) { if (hint) hint.textContent = "Type LAUNCH in the coupon field at checkout."; }
+  });
 
   /* ================= install tabs ================= */
   var SNIPS = {
