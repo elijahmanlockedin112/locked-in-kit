@@ -331,6 +331,20 @@
   .wins b { color: var(--ink); font-weight: 600; }
   .wins code { font-size: 0.85em; color: var(--ink); }
 
+  /* ---------- hero stats row (visible without scrolling) ---------- */
+  .stats {
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: 28px; max-width: 560px;
+    border-top: 2px solid var(--ink); border-bottom: 1px solid var(--rule); text-decoration: none; color: var(--ink);
+  }
+  .stats span { display: flex; flex-direction: column; gap: 6px; padding: 12px 0 12px; font: 500 0.72rem/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .stats span + span { padding-left: 12px; border-left: 1px solid var(--rule); }
+  .stats b { font-family: var(--display); font-stretch: 125%; font-weight: 900; font-size: clamp(1.7rem, 3.4vw, 2.6rem); line-height: .9; letter-spacing: -0.04em; color: var(--accent); text-transform: none; }
+  .stats:hover b { color: var(--ink); }
+  @media (max-width: 420px) {
+    .stats span { font-size: 0.6rem; letter-spacing: .03em; }
+    .stats span + span { padding-left: 8px; }
+  }
+
   /* ---------- hero inventory line ---------- */
   .inventory {
     display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; margin-top: 26px;
@@ -458,7 +472,13 @@
           <a class="btn" href="https://payhip.com/b/lsyVE">Get the kit <span class="price-tag">$19</span></a>
           <a class="link" href="#inside">Look inside first</a>
         </div>
-        <a class="inventory" href="#kit"><b>18</b> skills <i>·</i> <b>6</b> agents <i>·</i> <b>5</b> hooks <i>·</i> <b>8</b> templates <i>·</i> <b>1</b> playbook <span aria-hidden="true">↓</span></a>
+        <a class="stats" href="#kit" aria-label="What's inside: 18 skills, 6 agents, 5 hooks, 8 templates, 1 playbook. See everything.">
+          <span><b>18</b>skills</span>
+          <span><b>6</b>agents</span>
+          <span><b>5</b>hooks</span>
+          <span><b>8</b>templates</span>
+          <span><b>1</b>playbook</span>
+        </a>
         <ul class="wins">
           <li><b>It proves its work.</b> A Stop hook runs your tests every time Claude tries to finish. If they fail, it keeps working.</li>
           <li><b>It can't wreck anything.</b> <code>rm -rf ~</code>, force-push to main and reading <code>.env</code> are blocked before they run.</li>
