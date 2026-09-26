@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Locked In Kit</title>
+<meta name="description" content="Stop babysitting Claude Code. A drop-in kit where Claude can't say done until your tests pass: 18 skills, 6 subagents, 5 hooks, 8 CLAUDE.md templates and the Locked In Method playbook.">
+<meta property="og:title" content="Locked In Kit">
+<meta property="og:description" content="Claude can't say done until your tests pass. 43 drop-in files for Claude Code.">
+<meta property="og:image" content="https://elijahmanlockedin112.github.io/locked-in-kit/cover.png">
+<meta property="og:url" content="https://elijahmanlockedin112.github.io/locked-in-kit/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --ground: #e3e5de;
+    --surface: #f2f3ee;
+    --ink: #16181b;
+    --muted: #5d6158;
+    --rule: #c7cac0;
+    --accent: #2a44d4;
+    --accent-ink: #ffffff;
+    --accent-soft: #d6dcf7;
+    --amber: #e8a317;
+    --green: #2f8f5b;
+    --screen: #15171a;
+    --screen-2: #1d2024;
+    --screen-text: #d6d9d0;
+    --screen-dim: #7d8278;
+    --screen-rule: #2c3035;
+    --screen-edge: rgba(0,0,0,.25);
+    --key: #fbfbf8;
+    --key-edge: #b9bdb2;
+
+    --display: "Archivo", "Arial Black", Helvetica, sans-serif;
+    --body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+    --step--1: 0.8125rem;
+    --step-0: 1rem;
+    --step-1: 1.1875rem;
+    --step-2: 1.5rem;
+    --step-3: clamp(1.9rem, 3.6vw, 2.75rem);
+    --step-4: clamp(2.6rem, 7.4vw, 6rem);
+    --max: 1180px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground: #111315;
+      --surface: #181b1e;
+      --ink: #e6e8e1;
+      --muted: #979b91;
+      --rule: #2b2f33;
+      --accent: #8198ff;
+      --accent-ink: #0d1022;
+      --accent-soft: #1f2748;
+      --key: #22262a;
+      --key-edge: #0b0c0e;
+      --screen: #1a1d21;
+      --screen-2: #22262b;
+      --screen-rule: #32373d;
+      --screen-edge: #34393f;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: #111315;
+    --surface: #181b1e;
+    --ink: #e6e8e1;
+    --muted: #979b91;
+    --rule: #2b2f33;
+    --accent: #8198ff;
+    --accent-ink: #0d1022;
+    --accent-soft: #1f2748;
+    --key: #22262a;
+    --key-edge: #0b0c0e;
+    --screen: #1a1d21;
+    --screen-2: #22262b;
+    --screen-rule: #32373d;
+    --screen-edge: #34393f;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font: 400 var(--step-0)/1.6 var(--body);
+    -webkit-font-smoothing: antialiased;
+    padding-inline: max(16px, env(safe-area-inset-left, 0px));
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+  code, kbd, pre, .mono { font-family: var(--mono); }
+  h1, h2, h3 { margin: 0; text-wrap: balance; }
+  p { margin: 0; }
+  .shell { max-width: var(--max); margin-inline: auto; }
+
+  /* ---------- top bar ---------- */
+  .bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding-block: 18px; border-bottom: 1px solid var(--rule);
+  }
+  .mark {
+    font-family: var(--display); font-weight: 900; font-stretch: 125%;
+    font-size: 1.05rem; letter-spacing: -0.01em; text-transform: uppercase; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .mark svg { width: 18px; height: 22px; }
+  .bar-meta { display: flex; align-items: center; gap: 20px; font-size: var(--step--1); color: var(--muted); }
+  .bar-meta .mono { letter-spacing: 0.02em; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    font: 600 var(--step-0)/1 var(--body); text-decoration: none;
+    background: var(--accent); color: var(--accent-ink);
+    padding: 14px 20px; border-radius: 6px; border: 0; cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+    box-shadow: 0 2px 0 0 color-mix(in srgb, var(--accent) 55%, #000);
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 3px 0 0 color-mix(in srgb, var(--accent) 55%, #000); }
+  .btn:active { transform: translateY(1px); box-shadow: 0 1px 0 0 color-mix(in srgb, var(--accent) 55%, #000); }
+  .btn-sm { padding: 10px 14px; font-size: var(--step--1); }
+  .btn .price-tag { font-family: var(--mono); font-weight: 500; opacity: .85; }
+  .link { font-weight: 600; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+
+  /* ---------- hero ---------- */
+  .hero {
+    display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: clamp(28px, 5vw, 64px); align-items: center;
+    padding-block: clamp(40px, 7vw, 88px) clamp(48px, 7vw, 96px);
+  }
+  .eyebrow {
+    font-family: var(--mono); font-size: var(--step--1); letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted); display: flex; gap: 10px; align-items: center;
+  }
+  .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+  .hero h1 {
+    font-family: var(--display); font-weight: 850; font-stretch: 112%;
+    font-size: clamp(2.5rem, 5.3vw, 4.6rem); line-height: 0.95; letter-spacing: -0.035em;
+    margin-block: 22px 26px; overflow-wrap: anywhere;
+  }
+  .hero h1 .thin { font-weight: 300; font-stretch: 100%; letter-spacing: -0.04em; display: block; color: var(--muted); }
+  .hero .lede { font-size: var(--step-1); max-width: 34ch; color: var(--ink); }
+  .hero .lede code { font-size: 0.92em; background: var(--surface); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--rule); }
+  .cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: 32px; }
+  .hero .fine { margin-top: 18px; font-size: var(--step--1); color: var(--muted); }
+
+  /* ---------- terminal ---------- */
+  .term {
+    background: var(--screen); color: var(--screen-text);
+    border-radius: 12px; overflow: hidden;
+    box-shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 30px 60px -30px rgba(10, 14, 30, .45), 0 0 0 1px var(--screen-edge);
+    font: 400 0.84rem/1.7 var(--mono);
+    display: flex; flex-direction: column; min-width: 0;
+  }
+  .term-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 10px 14px; border-bottom: 1px solid var(--screen-rule); background: var(--screen-2);
+    color: var(--screen-dim); font-size: 0.75rem;
+  }
+  .dots { display: flex; gap: 6px; }
+  .dots i { width: 10px; height: 10px; border-radius: 50%; background: #3a3e43; display: block; }
+  .term-log {
+    padding: 16px 18px 8px; height: 318px; overflow-y: auto; overflow-x: hidden;
+    scrollbar-width: thin; scrollbar-color: #3a3e43 transparent;
+  }
+  .term-log .ln { white-space: pre-wrap; word-break: break-word; }
+  .term .p { color: #8fa3ff; }
+  .term .dim { color: var(--screen-dim); }
+  .term .ok { color: #6fd39a; }
+  .term .warn { color: #f5c14f; }
+  .term .tag {
+    display: inline-block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em;
+    padding: 0 6px; border-radius: 3px; margin-right: 8px; line-height: 1.6;
+  }
+  .term .tag.block { background: var(--amber); color: #1a1204; }
+  .term .tag.go { background: #2f8f5b; color: #eafff2; }
+  .term .tag.info { background: #2b3350; color: #c4ceff; }
+  .term-input {
+    display: flex; align-items: center; gap: 10px; padding: 10px 18px 12px;
+    border-top: 1px solid var(--screen-rule);
+  }
+  .term-input label { color: #8fa3ff; }
+  .term-input input {
+    flex: 1; min-width: 0; background: transparent; border: 0; color: var(--screen-text);
+    font: inherit; caret-color: #8fa3ff; padding: 4px 0;
+  }
+  .term-input input::placeholder { color: #5d625a; }
+  .term-input input:focus-visible { outline: none; }
+  .term-input:focus-within { background: #191c20; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 18px 16px; }
+  .chip {
+    font: 500 0.72rem/1 var(--mono); color: var(--screen-text); background: #23272c;
+    border: 1px solid #33383e; padding: 7px 9px; border-radius: 4px; cursor: pointer;
+  }
+  .chip:hover { border-color: #8fa3ff; color: #fff; }
+  .chip.danger { color: #f5c14f; }
+  .term-caption { margin-top: 12px; font-size: var(--step--1); color: var(--muted); display: flex; gap: 8px; }
+  .term-caption b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- sections ---------- */
+  section { padding-block: clamp(56px, 8vw, 104px); border-top: 1px solid var(--rule); }
+  .sec-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px 48px; align-items: end; margin-bottom: 40px; }
+  .sec-head h2 {
+    font-family: var(--display); font-weight: 800; font-stretch: 112%;
+    font-size: var(--step-3); line-height: 1.02; letter-spacing: -0.03em;
+  }
+  .sec-head p { color: var(--muted); font-size: var(--step-1); max-width: 46ch; }
+  .label { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+  /* ---------- explorer ---------- */
+  .explorer {
+    display: grid; grid-template-columns: 280px minmax(0, 1fr);
+    border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; background: var(--surface);
+  }
+  .tree { border-right: 1px solid var(--rule); padding: 14px 0; max-height: 620px; overflow-y: auto; font: 400 0.8rem/1.4 var(--mono); }
+  .tree .root { padding: 4px 16px 10px; color: var(--muted); }
+  .tree details { margin: 0; }
+  .tree summary {
+    list-style: none; cursor: pointer; padding: 5px 16px; display: flex; justify-content: space-between; gap: 8px;
+    font-weight: 600; color: var(--ink);
+  }
+  .tree summary::-webkit-details-marker { display: none; }
+  .tree summary::before { content: "▸"; color: var(--muted); margin-right: 6px; transition: transform .15s; display: inline-block; }
+  .tree details[open] > summary::before { transform: rotate(90deg); }
+  .tree summary .n { color: var(--muted); font-weight: 400; margin-left: auto; }
+  .tree summary .name { flex: 1; }
+  .tree button {
+    all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; gap: 8px; width: 100%;
+    padding: 4px 16px 4px 38px; color: var(--muted);
+  }
+  .tree button:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 5%, transparent); }
+  .tree button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .tree button[aria-current="true"] { color: var(--ink); background: var(--accent-soft); box-shadow: inset 2px 0 0 var(--accent); }
+  .tree button .has { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-left: auto; flex: none; }
+  .tree .solo { padding-left: 16px; font-weight: 600; color: var(--ink); }
+
+  .viewer { min-width: 0; box-shadow: inset 1px 0 0 var(--screen-edge); display: flex; flex-direction: column; background: var(--screen); color: var(--screen-text); }
+  .viewer-head {
+    display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px;
+    padding: 14px 20px; border-bottom: 1px solid var(--screen-rule); background: var(--screen-2);
+  }
+  .viewer-path { font: 500 0.8rem/1.4 var(--mono); color: var(--screen-text); word-break: break-all; }
+  .viewer-path .dir { color: var(--screen-dim); }
+  .viewer-kind { font: 500 0.7rem/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: #8fa3ff; }
+  .viewer-desc { padding: 14px 20px 0; font: 400 0.9rem/1.55 var(--body); color: #b9bdb3; max-width: 70ch; }
+  .code { overflow: auto; flex: 1; max-height: 520px; padding: 14px 0 20px; }
+  .code table { border-collapse: collapse; font: 400 0.8rem/1.65 var(--mono); }
+  .code td { padding: 0 20px 0 0; vertical-align: top; white-space: pre; }
+  .code td.no { color: #4b5048; text-align: right; padding: 0 16px 0 20px; user-select: none; min-width: 3.2em; }
+  .code .fm { color: #9aa4c9; }
+  .code .key { color: #8fa3ff; }
+  .code .h { color: #f0f1ec; font-weight: 600; }
+  .code .arg { color: #f5c14f; }
+  .code .cm { color: var(--screen-dim); }
+  .code .more { color: var(--screen-dim); font-style: italic; }
+  .viewer-foot { border-top: 1px solid var(--screen-rule); padding: 10px 20px; font: 400 0.75rem/1.4 var(--mono); color: var(--screen-dim); }
+
+  /* ---------- spec table ---------- */
+  .spec-wrap { overflow-x: auto; border-top: 2px solid var(--ink); }
+  .spec { width: 100%; border-collapse: collapse; min-width: 640px; font-variant-numeric: tabular-nums; }
+  .spec th { text-align: left; font: 500 0.72rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 14px 16px 12px 0; border-bottom: 1px solid var(--rule); }
+  .spec td { padding: 18px 16px 18px 0; border-bottom: 1px solid var(--rule); vertical-align: baseline; }
+  .spec td.piece { font-family: var(--display); font-stretch: 112%; font-weight: 750; font-size: var(--step-1); letter-spacing: -0.01em; }
+  .spec td.count { font-family: var(--display); font-stretch: 125%; font-weight: 850; font-size: var(--step-2); color: var(--accent); width: 72px; }
+  .spec td.where code { font-size: 0.82rem; background: var(--surface); border: 1px solid var(--rule); padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+  .spec td.when { color: var(--muted); }
+
+  .install { margin-top: 44px; display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 24px 48px; align-items: start; }
+  .install h3 { font-family: var(--display); font-stretch: 112%; font-weight: 800; font-size: var(--step-2); letter-spacing: -0.02em; margin-bottom: 10px; }
+  .install p { color: var(--muted); max-width: 44ch; }
+  .tabs { display: flex; gap: 4px; margin-bottom: -1px; position: relative; }
+  .tab {
+    font: 500 0.78rem/1 var(--mono); padding: 10px 14px; border: 1px solid transparent; border-bottom: 0;
+    background: transparent; color: var(--muted); cursor: pointer; border-radius: 6px 6px 0 0;
+  }
+  .tab[aria-selected="true"] { background: var(--screen); color: var(--screen-text); }
+  .snippet { position: relative; background: var(--screen); color: var(--screen-text); border-radius: 0 8px 8px 8px; }
+  .snippet pre { margin: 0; padding: 18px 20px; overflow-x: auto; font-size: 0.8rem; line-height: 1.75; }
+  .snippet .copy {
+    position: absolute; top: 10px; right: 10px; font: 500 0.72rem/1 var(--mono);
+    background: #2a2e33; color: var(--screen-text); border: 1px solid #3a3f45; border-radius: 4px; padding: 7px 10px; cursor: pointer;
+  }
+  .snippet .copy:hover { border-color: #8fa3ff; }
+
+  /* ---------- habits / keycaps ---------- */
+  .habits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); }
+  .habit { padding: 26px 24px 28px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); display: flex; flex-direction: column; gap: 14px; }
+  .keys { display: flex; align-items: center; gap: 6px; min-height: 40px; flex-wrap: wrap; }
+  .keys .plus { color: var(--muted); font-family: var(--mono); font-size: 0.8rem; }
+  kbd {
+    display: inline-flex; align-items: center; justify-content: center; min-width: 38px; height: 36px; padding: 0 11px;
+    font: 500 0.8rem/1 var(--mono); color: var(--ink);
+    background: var(--key); border: 1px solid var(--key-edge); border-bottom-width: 3px; border-radius: 6px;
+  }
+  kbd.cmd { background: transparent; border: 1px dashed var(--key-edge); border-bottom-width: 1px; }
+  .habit h3 { font-family: var(--body); font-weight: 600; font-size: var(--step-1); letter-spacing: -0.01em; }
+  .habit p { color: var(--muted); font-size: 0.95rem; }
+
+  /* ---------- price ---------- */
+  .buy { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 64px; align-items: start; }
+  .buy h2 {
+    font-family: var(--display); font-weight: 850; font-stretch: 125%;
+    font-size: clamp(4.5rem, 14vw, 10rem); line-height: 0.85; letter-spacing: -0.05em;
+  }
+  .buy h2 small { display: block; font-size: var(--step-1); font-weight: 500; font-stretch: 100%; letter-spacing: 0; color: var(--muted); margin-top: 18px; line-height: 1.4; }
+  .buy-list { list-style: none; margin: 0 0 28px; padding: 0; border-top: 2px solid var(--ink); }
+  .buy-list li { display: flex; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--rule); font-variant-numeric: tabular-nums; }
+  .buy-list li span:last-child { font-family: var(--mono); font-size: 0.85rem; color: var(--muted); }
+  .buy .btn { width: 100%; justify-content: center; padding-block: 18px; font-size: var(--step-1); }
+  .buy .fine { margin-top: 14px; font-size: var(--step--1); color: var(--muted); }
+
+  /* ---------- faq ---------- */
+  .faq { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px 56px; }
+  .faq dt { font-weight: 600; font-size: var(--step-1); margin-bottom: 8px; letter-spacing: -0.01em; }
+  .faq dd { margin: 0; color: var(--muted); max-width: 52ch; }
+  .faq code { font-size: 0.88em; }
+
+  footer { border-top: 1px solid var(--rule); padding-block: 28px 48px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: var(--step--1); color: var(--muted); }
+
+
+  /* ---------- hero wins ---------- */
+  .wins { list-style: none; margin: 34px 0 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--rule); max-width: 560px; }
+  .wins li { padding: 12px 0 12px 28px; border-bottom: 1px solid var(--rule); position: relative; color: var(--muted); font-size: 0.95rem; }
+  .wins li::before { content: ""; position: absolute; left: 2px; top: 19px; width: 12px; height: 7px; border-left: 2px solid var(--green); border-bottom: 2px solid var(--green); transform: rotate(-45deg); }
+  .wins b { color: var(--ink); font-weight: 600; }
+  .wins code { font-size: 0.85em; color: var(--ink); }
+
+  /* ---------- method loop ---------- */
+  .loop { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); counter-reset: step; position: relative; }
+  .loop li { counter-increment: step; padding: 0 20px 0 0; display: flex; flex-direction: column; gap: 10px; position: relative; }
+  .loop li::before {
+    content: counter(step); font-family: var(--display); font-stretch: 125%; font-weight: 850; font-size: 1rem;
+    width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--ground); border: 2px solid var(--ink); color: var(--ink); position: relative; z-index: 1;
+  }
+  .loop li:nth-child(4)::before { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .loop li:nth-child(3)::before { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .loop::before { content: ""; position: absolute; top: 19px; left: 19px; right: 19%; height: 2px; background: var(--rule); }
+  .loop h3 { font-family: var(--display); font-stretch: 112%; font-weight: 800; font-size: var(--step-1); letter-spacing: -0.015em; margin-top: 8px; }
+  .loop p { color: var(--muted); font-size: 0.93rem; }
+  .loop .uses { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+  .loop .uses code { font-size: 0.74rem; background: var(--surface); border: 1px solid var(--rule); padding: 3px 7px; border-radius: 4px; }
+  .loop-foot { margin-top: 36px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 32px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: var(--step--1); color: var(--muted); }
+  .loop-foot a { color: var(--ink); text-underline-offset: 3px; }
+  .research { font-size: var(--step-1); color: var(--ink); max-width: 46ch; }
+  .research a { text-underline-offset: 4px; text-decoration-thickness: 1px; }
+  @media (max-width: 920px) {
+    .loop { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+    .loop::before { top: 19px; bottom: 19px; left: 18px; right: auto; width: 2px; height: auto; }
+    .loop li { display: grid; grid-template-columns: 38px minmax(0, 1fr); column-gap: 18px; row-gap: 6px; padding: 0; }
+    .loop li > * { grid-column: 2; }
+    .loop li::before { grid-row: 1 / span 3; grid-column: 1; }
+    .loop h3 { margin-top: 6px; }
+  }
+
+  /* ---------- load sequence ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero > * { animation: rise .7s cubic-bezier(.2,.7,.2,1) both; }
+    .hero > :nth-child(2) { animation-delay: .12s; }
+    @keyframes rise { from { transform: translateY(14px); opacity: .001; } to { transform: none; opacity: 1; } }
+    .term-log .ln.new { animation: type .28s ease-out both; }
+    @keyframes type { from { opacity: 0; transform: translateX(-4px); } to { opacity: 1; transform: none; } }
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 920px) {
+    .hero, .sec-head, .install, .buy { grid-template-columns: minmax(0, 1fr); }
+    .explorer { grid-template-columns: minmax(0, 1fr); }
+    .tree { border-right: 0; border-bottom: 1px solid var(--rule); max-height: 260px; }
+    .habits { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .bar-meta .hide-sm { display: none; }
+  }
+  @media (max-width: 600px) {
+    .habits, .faq { grid-template-columns: minmax(0, 1fr); }
+    .term-log { height: 280px; }
+    .hero h1 { letter-spacing: -0.03em; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header class="bar">
+    <a class="mark" href="#top" aria-label="Locked In Kit home">
+      <svg viewBox="0 0 18 22" aria-hidden="true"><path d="M4 9V6a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="2.4"/><rect x="1" y="9" width="16" height="12" rx="2" fill="currentColor"/><rect x="8" y="13" width="2" height="4" fill="var(--ground)"/></svg>
+      Locked In
+    </a>
+    <div class="bar-meta">
+      <span class="mono hide-sm">v1.0 · 43 files · for Claude Code</span>
+      <a class="btn btn-sm" href="https://payhip.com/b/lsyVE">Get the kit · $19</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div>
+        <p class="eyebrow">The Locked In Method for Claude Code</p>
+        <h1>Stop babysitting<span class="thin">Claude Code.</span></h1>
+        <p class="lede">Claude can't say "done" until your tests pass, can't touch your secrets, and uses less of your limit. Copy one folder into <code>~/.claude</code> and you're set up in two minutes.</p>
+        <div class="cta-row">
+          <a class="btn" href="https://payhip.com/b/lsyVE">Get the kit <span class="price-tag">$19</span></a>
+          <a class="link" href="#inside">Look inside first</a>
+        </div>
+        <ul class="wins">
+          <li><b>It proves its work.</b> A Stop hook runs your tests every time Claude tries to finish. If they fail, it keeps working.</li>
+          <li><b>It can't wreck anything.</b> <code>rm -rf ~</code>, force-push to main and reading <code>.env</code> are blocked before they run.</li>
+          <li><b>Your usage lasts longer.</b> <code>/handoff</code> → <code>/clear</code> → <code>/pickup</code> keeps context small without losing your place.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="term" role="region" aria-label="Interactive demo of the kit in a Claude Code session">
+          <div class="term-head">
+            <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+            <span>~/projects/shop · claude</span>
+          </div>
+          <div class="term-log" id="log" aria-live="polite">
+            <div class="ln"><span class="p">&gt;</span> /lock-in add partial refunds to checkout</div>
+            <div class="ln dim">  3 questions answered · SPEC.md written</div>
+            <div class="ln dim">  check: npm test &amp;&amp; npx tsc --noEmit → .claude/verify.txt</div>
+            <div class="ln">&nbsp;</div>
+            <div class="ln"><span class="dim">claude:</span> Done. Partial refunds are implemented.</div>
+            <div class="ln">  <span class="tag block">BLOCKED</span><span class="warn">verify-gate.py</span> <span class="dim">2 tests failing</span></div>
+            <div class="ln dim">  ✗ refund.test.ts › partial refund rounds to cents</div>
+            <div class="ln"><span class="dim">claude:</span> Fixing rounding in src/orders/refund.ts:42…</div>
+            <div class="ln">  <span class="tag go">PASS</span><span class="ok">verify-gate.py</span> <span class="dim">48/48 tests · types clean</span></div>
+            <div class="ln"><span class="dim">claude:</span> Done, with the test output above as proof.</div>
+          </div>
+          <form class="term-input" id="termForm" autocomplete="off">
+            <label for="cmd">&gt;</label>
+            <input id="cmd" name="cmd" type="text" spellcheck="false" placeholder="Type a command, or tap one below" aria-label="Command">
+          </form>
+          <div class="chips" aria-label="Example commands">
+            <button class="chip danger" type="button" data-cmd="rm -rf ~/">rm -rf ~/</button>
+            <button class="chip danger" type="button" data-cmd="cat .env">cat .env</button>
+            <button class="chip danger" type="button" data-cmd="git push --force origin main">git push --force main</button>
+            <button class="chip" type="button" data-cmd="/handoff">/handoff</button>
+            <button class="chip" type="button" data-cmd="/mvp habit tracker with streaks">/mvp</button>
+            <button class="chip" type="button" data-cmd="/second-opinion">/second-opinion</button>
+          </div>
+        </div>
+        <p class="term-caption"><b>Try it.</b> A simulation of what the kit's hooks and workflows do in a real session.</p>
+      </div>
+    </div>
+
+    <section id="method" aria-labelledby="method-h">
+      <div class="sec-head">
+        <div>
+          <p class="label">The Locked In Method</p>
+          <h2 id="method-h">Give Claude a check it can run. The kit does it for you.</h2>
+        </div>
+        <p class="research">Anthropic's <a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener">best-practices guide</a> puts this habit first. Claude Code's creator, Boris Cherny, <a href="https://x.com/bcherny/status/2007179832300581177" target="_blank" rel="noopener">says it improves quality 2–3×</a>. The kit turns it into five steps, and every step is a file you install.</p>
+      </div>
+      <ol class="loop">
+        <li>
+          <h3>Lock the goal</h3>
+          <p>Claude interviews you about the hard parts, then writes a spec with one command that proves the feature works.</p>
+          <div class="uses"><code>/lock-in</code><code>SPEC.md</code></div>
+        </li>
+        <li>
+          <h3>Plan</h3>
+          <p>You agree on the plan before any file changes. Skip this when the change fits in one sentence.</p>
+          <div class="uses"><code>Shift+Tab</code><code>architect</code></div>
+        </li>
+        <li>
+          <h3>Build against the check</h3>
+          <p>Claude runs the check after each step. The Stop hook won't let it finish while the check fails.</p>
+          <div class="uses"><code>verify-gate.py</code><code>auto-format.py</code></div>
+        </li>
+        <li>
+          <h3>Prove it</h3>
+          <p>You get real test output, then a fresh reviewer checks the diff against the spec. Only gaps that matter get fixed.</p>
+          <div class="uses"><code>/second-opinion</code><code>code-reviewer</code></div>
+        </li>
+        <li>
+          <h3>Reset</h3>
+          <p>Write down where you are, clear the context, and pick up in a fresh session. You keep your progress, and the context stays small.</p>
+          <div class="uses"><code>/handoff</code><code>/clear</code><code>/pickup</code></div>
+        </li>
+      </ol>
+      <div class="loop-foot">
+        <span>Sources: <a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener">Anthropic, Best practices for Claude Code</a> · <a href="https://x.com/bcherny/status/2007179832300581177" target="_blank" rel="noopener">Boris Cherny's 13 tips, January 2026</a></span>
+        <span>This kit is independent. Neither source endorses it.</span>
+      </div>
+    </section>
+
+    <section id="inside" aria-labelledby="inside-h">
+      <div class="sec-head">
+        <div>
+          <p class="label">Look inside</p>
+          <h2 id="inside-h">Every file, open to read.</h2>
+        </div>
+        <p>Plain Markdown and Python with nothing compiled or hidden. Files marked with a dot show a real excerpt.</p>
+      </div>
+
+      <div class="explorer">
+        <nav class="tree" id="tree" aria-label="Kit files"></nav>
+        <div class="viewer">
+          <div class="viewer-head">
+            <div class="viewer-path" id="vPath"></div>
+            <div class="viewer-kind" id="vKind"></div>
+          </div>
+          <p class="viewer-desc" id="vDesc"></p>
+          <div class="code" id="vCode" tabindex="0" aria-label="File excerpt"></div>
+          <div class="viewer-foot" id="vFoot"></div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="fit-h">
+      <div class="sec-head">
+        <div>
+          <p class="label">How the pieces fit</p>
+          <h2 id="fit-h">Six kinds of file, each with one job.</h2>
+        </div>
+        <p>Claude Code already supports all of these. Most people never set them up because it takes weeks to get them right.</p>
+      </div>
+
+      <div class="spec-wrap">
+        <table class="spec">
+          <thead><tr><th>Piece</th><th>Count</th><th>Runs when</th><th>Lives in</th></tr></thead>
+          <tbody>
+            <tr><td class="piece">Skills</td><td class="count">12</td><td class="when">Load on their own when the task matches, e.g. "is this ready to deploy?" loads ship-it</td><td class="where"><code>~/.claude/skills/</code></td></tr>
+            <tr><td class="piece">Subagents</td><td class="count">6</td><td class="when">Claude hands off a review, search or plan to its own context</td><td class="where"><code>~/.claude/agents/</code></td></tr>
+            <tr><td class="piece">Workflows</td><td class="count">6</td><td class="when">You type <code>/lock-in</code>, <code>/handoff</code>, <code>/pickup</code>, <code>/mvp</code>, <code>/second-opinion</code>, <code>/cleanup</code></td><td class="where"><code>~/.claude/skills/</code></td></tr>
+            <tr><td class="piece">Hooks</td><td class="count">5</td><td class="when">Every time, no exceptions: before a command runs, after an edit, and when Claude tries to finish</td><td class="where"><code>.claude/settings.json</code></td></tr>
+            <tr><td class="piece">CLAUDE.md templates</td><td class="count">8</td><td class="when">Loaded at the start of every session in that project</td><td class="where"><code>./CLAUDE.md</code></td></tr>
+            <tr><td class="piece">Playbook</td><td class="count">1</td><td class="when">You read it once, in about ten minutes</td><td class="where"><code>PLAYBOOK.md</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="install">
+        <div>
+          <h3>Two minutes to install</h3>
+          <p>Unzip, run one block, restart Claude Code. Type <code>/</code> to see the workflows and <code>/agents</code> to see the subagents.</p>
+        </div>
+        <div>
+          <div class="tabs" role="tablist" aria-label="Operating system">
+            <button class="tab" role="tab" id="tab-unix" aria-selected="true" aria-controls="snip">macOS / Linux</button>
+            <button class="tab" role="tab" id="tab-win" aria-selected="false" aria-controls="snip">Windows</button>
+          </div>
+          <div class="snippet" id="snip" role="tabpanel">
+            <button class="copy" type="button" id="copyBtn">Copy</button>
+            <pre id="snipText"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="habits-h">
+      <div class="sec-head">
+        <div>
+          <p class="label">The playbook</p>
+          <h2 id="habits-h">Habits that make your usage last.</h2>
+        </div>
+        <p>A large context is resent with every message you send. The playbook shows how to keep it small without losing your place.</p>
+      </div>
+      <div class="habits">
+        <div class="habit">
+          <div class="keys"><kbd>Shift</kbd><span class="plus">+</span><kbd>Tab</kbd></div>
+          <h3>Plan before it builds</h3>
+          <p>Plan Mode gets you an agreed plan before any file changes. One good plan costs less than three rewrites.</p>
+        </div>
+        <div class="habit">
+          <div class="keys"><kbd class="cmd">/handoff</kbd><kbd class="cmd">/clear</kbd><kbd class="cmd">/pickup</kbd></div>
+          <h3>Clear without losing work</h3>
+          <p>Write down the state, wipe the context, and pick up from a short file instead of a huge history.</p>
+        </div>
+        <div class="habit">
+          <div class="keys"><kbd>Esc</kbd><kbd>Esc</kbd></div>
+          <h3>Rewind a bad turn</h3>
+          <p>Jump back to an earlier message instead of arguing the model out of a wrong direction.</p>
+        </div>
+        <div class="habit">
+          <div class="keys"><kbd class="cmd">@src/api/orders.ts</kbd></div>
+          <h3>Point, don't paste</h3>
+          <p>Reference files by path so Claude reads only what it needs, once.</p>
+        </div>
+        <div class="habit">
+          <div class="keys"><kbd class="cmd">researcher</kbd><span class="plus">→</span><kbd class="cmd">haiku</kbd></div>
+          <h3>Search in a side context</h3>
+          <p>The researcher subagent reads thirty files in its own context and hands back one paragraph.</p>
+        </div>
+        <div class="habit">
+          <div class="keys"><kbd class="cmd">CLAUDE.md</kbd><span class="plus">≤</span><kbd class="cmd">80 lines</kbd></div>
+          <h3>Keep the memory short</h3>
+          <p>It loads into every session. Every rule has to be worth its cost on every message.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="buy" aria-labelledby="buy-h">
+      <div class="buy">
+        <h2 id="buy-h">$19<small>One payment. That's about three days of a Max 20x plan, for a setup you'll use every day.</small></h2>
+        <div>
+          <ul class="buy-list">
+            <li><span>Skills that load when the task matches</span><span>12</span></li>
+            <li><span>Subagents</span><span>6</span></li>
+            <li><span>Workflows, including /lock-in</span><span>6</span></li>
+            <li><span>Hooks, including the verify gate</span><span>5</span></li>
+            <li><span>CLAUDE.md templates</span><span>8</span></li>
+            <li><span>The Locked In Method playbook</span><span>1</span></li>
+            <li><span>Future additions to the kit</span><span>free</span></li>
+          </ul>
+          <a class="btn" href="https://payhip.com/b/lsyVE">Get Locked In <span class="price-tag">$19</span></a>
+          <p class="fine">If it doesn't save you time, ask within 14 days for a full refund.</p>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="faq-h">
+      <div class="sec-head">
+        <div>
+          <p class="label">Questions</p>
+          <h2 id="faq-h">Before you buy</h2>
+        </div>
+      </div>
+      <dl class="faq">
+        <div><dt>Which plans does it work with?</dt><dd>Any setup that runs Claude Code: Pro, Max, Team, Enterprise or an API key. It's all config files, so there's nothing extra to install.</dd></div>
+        <div><dt>Will it really stretch my usage limits?</dt><dd>It cuts waste. The <code>/handoff</code> → <code>/clear</code> → <code>/pickup</code> loop, the Haiku-powered researcher and the <code>context-saver</code> skill keep your context small, and a smaller context uses less of your limit on every message. The verify gate also cuts the back-and-forth of "that didn't work, try again."</dd></div>
+        <div><dt>I'm not a professional developer. Is it for me?</dt><dd>Yes, maybe more than anyone. <code>/lock-in</code>, <code>/mvp</code> and the hooks give you the habits experienced engineers use without thinking, and the verify gate catches broken code you wouldn't know how to spot.</dd></div>
+        <div><dt>Does it work on Windows?</dt><dd>Yes. Everything is Markdown except the hooks, which are standard-library Python scripts with Windows setup notes included.</dd></div>
+        <div><dt>Can I change the files?</dt><dd>Yes, and you should. Edit any skill or command to match how you work, and commit them to your repo so your team gets them.</dd></div>
+        <div><dt>Is this made by Anthropic?</dt><dd>No. It's an independent kit made by a Claude Code user. Claude and Claude Code are trademarks of Anthropic, PBC.</dd></div>
+      </dl>
+    </section>
+  </main>
+
+  <footer>
+    <span>Locked In Kit · independent, not affiliated with Anthropic</span>
+    <a class="link" href="#buy">Get the kit</a>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  /* ================= terminal ================= */
+  var log = document.getElementById("log");
+  var form = document.getElementById("termForm");
+  var input = document.getElementById("cmd");
+  var busy = false;
+
+  var T = {
+    go: function (t) { return '<span class="tag go">GO</span>' + t; },
+    block: function (hook) { return '<span class="tag block">BLOCKED</span><span class="warn">' + hook + '</span>'; },
+    info: function (t) { return '<span class="tag info">' + t + '</span>'; },
+    dim: function (t) { return '<span class="dim">' + t + '</span>'; }
+  };
+
+  var COMMANDS = {
+    "/lock-in": [
+      T.dim("  Asking 3 questions about the hard parts (edge cases, scope)"),
+      "  Wrote " + T.info("SPEC.md") + "goal · done criteria · out of scope",
+      "  check: npm test &amp;&amp; npx tsc --noEmit " + T.dim("→ .claude/verify.txt"),
+      T.dim("  Plan: 5 steps. Waiting for your OK before building.")
+    ],
+    "/handoff": [
+      T.dim("  git status · git diff --stat · git log -10"),
+      "  Wrote " + T.info("HANDOFF.md") + "58 lines",
+      T.dim("  goal · status · next step · key files · dead ends"),
+      "  Now /clear, then /pickup in the fresh session."
+    ],
+    "/pickup": [
+      T.dim("  Read HANDOFF.md · branch feat/refunds"),
+      T.dim("  Re-checking state: npm test -- refund … 11 passed"),
+      "  Next step: implement refundPartial() in src/orders/refund.ts"
+    ],
+    "/second-opinion": [
+      T.dim("  Fresh-context reviewer · diff checked against SPEC.md"),
+      "  " + T.info("2 GAPS") + "that break stated requirements",
+      '  <span class="warn">1</span> refunds over the order total are not rejected (spec §3)',
+      '  <span class="warn">2</span> no test for refunding a cancelled order',
+      T.dim("  Style nits skipped on purpose.")
+    ],
+    "/ship-it": [
+      T.dim("  Running the checks your CI runs"),
+      '  <span class="ok">✓</span> install  <span class="ok">✓</span> types  <span class="ok">✓</span> lint  <span class="ok">✓</span> tests 48/48  <span class="ok">✓</span> build',
+      "  " + T.go("safe to deploy · rollback: revert a3f91c2")
+    ],
+    "/bug-hunt": [
+      T.dim("  Reproduce first: 1 command shows the failure"),
+      "  3 ranked hypotheses · cheapest one confirmed",
+      '  Failing test written → minimal fix → <span class="ok">test passes</span>'
+    ],
+    "/cleanup": [
+      T.dim("  Changed files only · no drive-by edits"),
+      "  Removed 4 debug logs, 3 unused imports, 1 dead branch.",
+      '  Re-ran checks: <span class="ok">all passing</span>'
+    ]
+  };
+  var BUILTIN = ["/plan", "/resume", "/review", "/verify", "/code-review", "/clear", "/compact", "/rewind", "/context", "/btw", "/init", "/model"];
+
+  function mvp(arg) {
+    var idea = arg || "habit tracker with streaks";
+    return [
+      T.dim("  Scoping the smallest shippable version of: " + esc(idea)),
+      "  Core loop: 3 steps · In: 4 features · Out: auth, payments, settings",
+      "  Stack: Vite + React + localStorage · 7 files · deploy: Netlify",
+      T.dim("  Waiting for your OK before writing code.")
+    ];
+  }
+
+  function judge(raw) {
+    var c = raw.trim();
+    var low = c.toLowerCase();
+    if (c.charAt(0) === "/") {
+      var name = low.split(/\s+/)[0];
+      var arg = c.slice(name.length).trim();
+      if (name === "/mvp") return mvp(arg);
+      if (COMMANDS[name]) return COMMANDS[name];
+      if (BUILTIN.indexOf(name) > -1) return [T.dim("  " + esc(name) + " is built into Claude Code. The kit works alongside it."), "  Kit workflows: /lock-in /handoff /pickup /mvp /second-opinion /cleanup"];
+      return [T.dim("  Not a kit command. Try one of these:"), "  /lock-in /handoff /pickup /mvp /second-opinion /cleanup /ship-it /bug-hunt"];
+    }
+    if (/^(done|i'?m done|finish|finished)/i.test(c)) {
+      return [T.dim("  Stop hook: verify-gate.py runs .claude/verify.txt"), "  " + T.block("verify-gate.py") + T.dim("1 test failing"), T.dim("  Claude keeps working until the check passes.")];
+    }
+    var rules = [
+      [/\brm\s+(-[a-z]*r[a-z]*f?|-[a-z]*f[a-z]*r)[a-z]*\s+(\/|~|\$home|\*|\.\s*$|\.\.)/i, "Recursive delete of a broad path (/, ~, *, .. ).", "block-dangerous.py"],
+      [/git\s+push\b.*(--force\b|-f\b|--force-with-lease).*\b(main|master)\b|git\s+push\b.*\b(main|master)\b.*(--force\b|-f\b)/i, "Force-push to main/master rewrites shared history.", "block-dangerous.py"],
+      [/git\s+reset\s+--hard/i, "git reset --hard throws away uncommitted work.", "block-dangerous.py"],
+      [/\bdrop\s+(table|database|schema)\b/i, "DROP statement. Run it yourself if you mean it.", "block-dangerous.py"],
+      [/(curl|wget)\b[^|]*\|\s*(sudo\s+)?(ba|z)?sh\b/i, "Piping a download straight into a shell.", "block-dangerous.py"],
+      [/chmod\s+-r\s+777/i, "World-writable permissions, recursively.", "block-dangerous.py"],
+      [/(^|[\s\/"'])\.env(?!\.example)(\.[\w-]+)?\b|\.pem\b|id_rsa|id_ed25519|credentials(\.json)?\b/i, "That file holds secrets. Claude can't read or edit it.", "protect-secrets.py"]
+    ];
+    for (var i = 0; i < rules.length; i++) {
+      if (rules[i][0].test(c)) {
+        return [T.dim("  Bash(" + esc(c) + ")"), "  " + T.block(rules[i][2]), T.dim("  " + rules[i][1] + " Exit 2, nothing ran.")];
+      }
+    }
+    return [T.dim("  Bash(" + esc(c) + ")"), '  <span class="ok">allowed</span> ' + T.dim("· no hook objected, runs normally")];
+  }
+
+  function line(html, isNew) {
+    var d = document.createElement("div");
+    d.className = "ln" + (isNew ? " new" : "");
+    d.innerHTML = html;
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function run(cmd) {
+    if (busy || !cmd.trim()) return;
+    busy = true;
+    line("&nbsp;", false);
+    line('<span class="p">&gt;</span> ' + esc(cmd), true);
+    var out = judge(cmd);
+    var i = 0;
+    (function next() {
+      if (i >= out.length) { busy = false; return; }
+      line(out[i++], true);
+      if (reduce) next(); else setTimeout(next, 170 + Math.random() * 140);
+    })();
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = input.value;
+    input.value = "";
+    run(v);
+  });
+  document.querySelectorAll(".chip").forEach(function (b) {
+    b.addEventListener("click", function () { run(b.getAttribute("data-cmd")); });
+  });
+
+  /* ================= explorer ================= */
+  /*KIT_DATA_START*/
+  var FILES = {"skills": ["cleanup/SKILL.md", "handoff/SKILL.md", "lock-in/SKILL.md", "mvp/SKILL.md", "pickup/SKILL.md", "second-opinion/SKILL.md", "bug-hunt/SKILL.md", "commit-craft/SKILL.md", "context-saver/SKILL.md", "db-migration/SKILL.md", "explain-codebase/SKILL.md", "landing-page/SKILL.md", "perf-audit/SKILL.md", "pr-writer/SKILL.md", "safe-refactor/SKILL.md", "security-pass/SKILL.md", "ship-it/SKILL.md", "test-writer/SKILL.md"], "agents": ["architect.md", "code-reviewer.md", "debugger.md", "researcher.md", "test-runner.md", "ui-polisher.md"], "hooks": ["verify-gate.py", "block-dangerous.py", "protect-secrets.py", "auto-format.py", "notify-done.py", "README.md", "settings.example.json", "settings.windows.example.json"], "claude-md-templates": ["chrome-extension.md", "data-science-python.md", "global-user-CLAUDE.md", "nextjs-app.md", "node-express-api.md", "python-fastapi.md", "react-native-expo.md", "static-site.md", "README.md"]};
+  var DESCS = {"skills/cleanup/SKILL.md": "Workflow, type /cleanup. Removes debug output, unused imports, dead private code, commented-out blocks, and leftover test focus markers from the files changed in this work only, with no behavior change, then runs lint, typecheck, and tests to prove it. Invoke with /cleanup.", "skills/handoff/SKILL.md": "Workflow, type /handoff. Writes HANDOFF.md with the goal, status, next step, decisions, dead ends, and verify commands so a fresh session can resume with /pickup instead of re-exploring. Invoke with /handoff before /clear or when ending a session mid-task.", "skills/lock-in/SKILL.md": "Workflow, type /lock-in. Runs the Locked In Loop for a non-trivial feature - explore, interview the user on the hard decisions, write SPEC.md with an end-to-end verification command, arm the verify gate, get plan approval, build step by step against that command, then prove it with evidence and a fresh-context review against the spec.", "skills/mvp/SKILL.md": "Workflow, type /mvp. Turns an idea into the smallest version that can be shipped and used today - one job, one core loop, at most five features, the most boring stack that fits - then builds it and proves it works where it runs. Invoke with /mvp <idea>.", "skills/pickup/SKILL.md": "Workflow, type /pickup. Resumes work from HANDOFF.md in a fresh session - checks the handoff against the actual git state, runs its \"How to verify\" commands to confirm the starting point, states the next step, and continues. Invoke with /pickup after /handoff and /clear.", "skills/second-opinion/SKILL.md": "Workflow, type /second-opinion. Spawns a fresh-context subagent to adversarially check the current diff (or a named target) against the stated goal in SPEC.md, PLAN.md, or HANDOFF.md, reporting only ranked gaps that affect correctness or stated requirements. Invoke with /second-opinion before calling work done.", "skills/bug-hunt/SKILL.md": "Loads automatically when relevant. Diagnoses and fixes bugs by evidence - reproduce first, rank hypotheses, bisect regressions, write a failing test, apply a minimal root-cause fix, and prove it with the test suite. Triggers on bug reports, errors, crashes, stack traces, regressions, flaky tests, \"this used to work\", \"why is X happening\", or \"fix this error\".", "skills/commit-craft/SKILL.md": "Loads automatically when relevant. Splits a messy working tree into small, logical commits in the repo's message convention, staging by file or hunk, screening out secrets, build artifacts, and debug leftovers. Triggers on \"commit this\", \"commit my changes\", \"split into commits\", \"clean up commit history\", \"write a commit message\", or organizing changes before a push.", "skills/context-saver/SKILL.md": "Loads automatically when relevant. Keeps Claude Code sessions lean - chooses between /clear, /compact with a focus, /rewind, /btw, and a HANDOFF.md restart, delegates broad searches to subagents, and trims reads and command output. Triggers on usage limits, \"running out of context\", a long or sluggish session, \"save context\", \"why is my session so heavy\", or switching tasks mid-session.", "skills/db-migration/SKILL.md": "Loads automatically when relevant. Plans and writes zero-downtime database migrations using expand/contract, batched idempotent backfills, lock-aware DDL, and tested rollbacks. Triggers on \"add a column\", \"rename a column/table\", \"change a column type\", \"add an index\", \"write a migration\", \"backfill data\", \"drop a table\", or edits to a schema file (Prisma, Drizzle, Django, Rails, Alembic, Knex, TypeORM, raw SQL).", "skills/explain-codebase/SKILL.md": "Loads automatically when relevant. Maps an unfamiliar repository into one CODEBASE_MAP.md (entry points, one traced request, modules, data model, verified run/test commands, gotchas), or explains a single file, function, or concept in chat. Triggers on \"explain this codebase\", \"onboard me\", \"how does this repo work\", \"where do I start\", \"give me a tour\", or \"explain <file/function>\".", "skills/landing-page/SKILL.md": "Loads automatically when relevant. Builds a single-file, dependency-free, mobile-first landing page (hero, problem, solution, how it works, proof, pricing, FAQ, final CTA) with copy written to convert and no invented social proof. Triggers on \"landing page\", \"sales page\", \"product page\", \"waitlist page\", \"launch page\", or a one-page marketing site for a product or service.", "skills/perf-audit/SKILL.md": "Loads automatically when relevant. Measures a baseline, finds the real hot paths (Core Web Vitals, bundle size, N+1 queries, slow endpoints, re-renders, CPU hotspots), fixes the top three one at a time, and re-measures to prove each gain. Triggers on \"it's slow\", \"speed this up\", \"optimize\", \"performance audit\", \"improve Lighthouse score\", \"reduce bundle size\", \"page load is slow\", or \"this query is slow\".", "skills/pr-writer/SKILL.md": "Loads automatically when relevant. Writes a pull request title and description from the actual diff and commit history - summary, why, changes, how it was tested, risk and rollback - using the repo's PR template if one exists. Triggers on \"write a PR\", \"PR description\", \"open a pull request\", \"summarize this branch for review\", or pushing a branch for review.", "skills/safe-refactor/SKILL.md": "Loads automatically when relevant. Refactors code in small behavior-preserving steps, with a test baseline captured first, checks run after every step, and no drive-by changes. Triggers on \"refactor\", \"clean up\", \"extract\", \"split this file\", \"rename across the codebase\", \"reduce duplication\", \"untangle\", or any restructuring that should not change behavior.", "skills/security-pass/SKILL.md": "Loads automatically when relevant. Reviews a diff or codebase for exploitable vulnerabilities (secrets, injection, broken auth and authorization, SSRF, unsafe deserialization, insecure config, vulnerable dependencies) and reports severity-ranked findings with file:line, attack, and fix. Triggers on \"security review\", \"audit this\", \"is this safe\", \"check for vulnerabilities\", or before shipping auth, payment, upload, or public API code.", "skills/ship-it/SKILL.md": "Loads automatically when relevant. Runs a pre-deploy gate on the current branch (clean install, typecheck, lint, full tests, production build, env vars, secrets, migrations, rollback) and returns a GO / NO-GO report backed by real command output. Triggers on \"ship it\", \"ready to deploy?\", \"pre-deploy check\", \"can we release\", \"safe to merge to main\", or before a deploy, release tag, or merge to production.", "skills/test-writer/SKILL.md": "Loads automatically when relevant. Writes tests that match the repo's existing framework, layout, and conventions, covering boundaries and failure modes, then runs them and proves they can fail. Triggers on \"write tests\", \"add test coverage\", \"test this function/component/endpoint\", \"add a regression test\", or new code that has no tests.", "agents/architect.md": "Read-only planner that studies the existing code and returns an ordered implementation plan with files, per-step checks, risks, and an end-to-end verification command. Does not write code. Use proactively before changes that touch more than 3 files, schema or API changes, migrations, auth or payment work, framework upgrades, or large refactors, and whenever the approach is uncertain.", "agents/code-reviewer.md": "Reviews a diff in a fresh context and reports only issues that affect correctness, security, data safety, or the stated requirements, ranked by severity. Read-only. Use proactively after any change that touches more than one file or any auth, payment, data, or migration code, before committing or opening a PR, and whenever the user asks for a review or \"is this safe to ship\".", "agents/debugger.md": "Finds the root cause of an error, crash, failing test, wrong output, or regression, proves it with a reproduction, and applies the smallest fix. Use proactively when a command fails with a stack trace, a test fails unexpectedly, or behavior does not match expectations and the cause is not obvious after one look. Also use when the same fix has been attempted twice without success.", "agents/researcher.md": "Read-only codebase investigator that answers \"where is X\", \"how does Y work\", \"what calls Z\", and \"what would I touch to change W\" with a short summary and path:line references instead of file dumps. Use proactively before editing unfamiliar code, when the user says \"investigate\" or \"figure out how\", and any time answering would otherwise mean reading more than 3 files in the main conversation.", "agents/test-runner.md": "Runs the project's tests or verification command and returns a short pass/fail summary with classified failures, so raw test output never floods the main conversation. Report-only, never edits files. Use proactively after code changes, before commits, whenever the user says \"run the tests\", and any time a test run is likely to print more than a screen of output.", "agents/ui-polisher.md": "Frontend polish specialist that fixes spacing, typography, contrast, responsive layout, interaction states, and accessibility in existing UI code without changing behavior. Use proactively after building a new page or component, before shipping any user-facing screen, and when the user says the UI \"looks off\", \"feels cramped\", or \"looks amateur\".", "hooks/verify-gate.py": "Claude Code Stop hook. Claude cannot finish a turn until your verification command passes.", "hooks/block-dangerous.py": "Claude Code PreToolUse hook for Bash (and PowerShell).", "hooks/protect-secrets.py": "Claude Code PreToolUse hook.", "hooks/auto-format.py": "Claude Code PostToolUse hook for Edit|MultiEdit|Write.", "hooks/notify-done.py": "Claude Code Stop hook.", "hooks/README.md": "What each hook does, how to install it, and how to test it.", "hooks/settings.example.json": "Wires the hooks into Claude Code. Merge into .claude/settings.json.", "hooks/settings.windows.example.json": "Same wiring for Windows, where the Python launcher is `python` or `py`.", "claude-md-templates/chrome-extension.md": "Manifest V3: permissions discipline, packaging, and the checks to run.", "claude-md-templates/data-science-python.md": "Notebooks vs modules, reproducibility, data handling.", "claude-md-templates/global-user-CLAUDE.md": "Your personal ~/.claude/CLAUDE.md: working preferences for every project.", "claude-md-templates/nextjs-app.md": "Next.js App Router: exact commands, conventions Claude gets wrong, verification.", "claude-md-templates/node-express-api.md": "Express API: validation, error handling, and the checks to run.", "claude-md-templates/python-fastapi.md": "FastAPI: layout, typing, tests, migrations, and the checks to run.", "claude-md-templates/react-native-expo.md": "Expo: platform gotchas, device testing, and the checks to run.", "claude-md-templates/static-site.md": "Plain HTML/CSS/JS: performance, accessibility, deploy checks.", "claude-md-templates/README.md": "How to pick a template and prune it to what actually prevents mistakes.", "PLAYBOOK.md": "The Locked In Method: the five-step loop, CLAUDE.md that changes behavior, context hygiene, a decision table, 10 prompts that work, and sources.", "README.md": "Install steps for macOS, Linux and Windows, requirements, and your first 10 minutes."};
+  var EXCERPTS = {"skills/lock-in/SKILL.md": "---\nname: lock-in\ndescription: Runs the Locked In Loop for a non-trivial feature - explore, interview the user on the hard decisions, write SPEC.md with an end-to-end verification command, arm the verify gate, get plan approval, build step by step against that command, then prove it with evidence and a fresh-context review against the spec.\nargument-hint: \"[feature to build, or SPEC.md to build an approved spec]\"\ndisable-model-invocation: true\n---\n\n# The Locked In Loop\n\nFeature: $ARGUMENTS\n\nIf empty, ask in one line what to build, then stop.\n\nLeft alone, you stop when the work looks done. This loop defines \"done\" as a command that passes, writes it down before any code exists, and holds the build to it. If the whole change fits in one sentence (a typo, a rename, a one-line fix), say so and just do it; the loop is overhead there.\n\n**Building an existing spec:** if the argument is `SPEC.md` (or a path to one) and it has an approved `## Plan`, read it and go straight to step 5.\n\n## 1. Explore (edit nothing)\n\nFind the files this touches, the closest existing feature to copy the pattern from, and the project's real test, typecheck, and build commands. Send broad searches to a subagent and keep only its conclusions.\n\n## 2. Interview\n\nUse the AskUserQuestion tool: up to 4 questions per call, 2 to 4 options each, your recommended option first and labeled \"(Recommended)\". Ask only what changes the design and cannot be read from the code:\n- Edge cases: empty, duplicate, concurrent, partial failure, very large input\n- Tradeoffs: strictness vs. convenience, consistency vs. speed, build vs. reuse\n- UX: what the user sees on error, while loading, when there is nothing\n- Scope: which tempting adjacent features are out\n- Proof: what would convince the user it works\n\nNever ask what the code, the README, or the obvious answer settles. Run another round only if answers opened a real question. Stop when you could write done criteria the user would sign.\n\n## 3. Write SPEC.md\n\n```markdown\n# Spec: <feature>\n## Goal\n<1-2 sentences: the outcome, for whom.>\n## Done when\n- [ ] <Observable behavior, checkable by a command or a specific manual step>\n## Files and interfaces\n- `path` (new|edit): <what changes; signatures, routes, schema, events>\n## Decisions\n- <Choice> - <reason> (from the interview; not to be relitigated)", "skills/handoff/SKILL.md": "---\nname: handoff\ndescription: Writes HANDOFF.md with the goal, status, next step, decisions, dead ends, and verify commands so a fresh session can resume with /pickup instead of re-exploring. Invoke with /handoff before /clear or when ending a session mid-task.\nargument-hint: \"[optional note about what to do next]\"\ndisable-model-invocation: true\nallowed-tools: Bash(git status *) Bash(git diff *) Bash(git log *) Bash(git branch *)\n---\n\n# Handoff\n\nNote from the user: $ARGUMENTS\n\nWrite a file that lets a session with none of this conversation's context continue exactly where this one stops.\n\n## Current state\n- Branch: !`git branch --show-current 2>/dev/null || true`\n- Status: !`git status --short 2>/dev/null || true`\n- Diff stat: !`git diff --stat HEAD 2>/dev/null || true`\n- Recent commits: !`git log --oneline -8 2>/dev/null || true`\n\nCombine this with the conversation: the goal, what was decided and why, what was tried and failed, what was verified. If SPEC.md exists, link it instead of restating it.\n\n## Write HANDOFF.md (project root, overwrite)\n\nTerse, specific, 40 to 120 lines. Paths and commands, not prose.\n\n```markdown\n# Handoff - <YYYY-MM-DD HH:MM> - branch <branch> @ <short sha>\n\n## Goal", "skills/second-opinion/SKILL.md": "---\nname: second-opinion\ndescription: Spawns a fresh-context subagent to adversarially check the current diff (or a named target) against the stated goal in SPEC.md, PLAN.md, or HANDOFF.md, reporting only ranked gaps that affect correctness or stated requirements. Invoke with /second-opinion before calling work done.\nargument-hint: \"[optional: file, directory, or commit range to review]\"\ndisable-model-invocation: true\nallowed-tools: Bash(git status *) Bash(git diff *) Bash(ls *)\n---\n\n# Second Opinion\n\nTarget: $ARGUMENTS (if empty: all uncommitted changes, `git diff HEAD` plus untracked files).\n\nThe session that wrote the code is the worst judge of it. A reviewer with no memory of the build judges the code, not the story told about it. The built-in `/code-review` hunts general bugs; this checks the work against what it was supposed to do.\n\n## Current state\n- Changed files: !`git status --short 2>/dev/null || true`\n- Goal documents present: !`ls SPEC.md PLAN.md HANDOFF.md 2>/dev/null || true`\n\n## 1. Frame the review\n\n- Nothing to review (no changes, no target): say so and stop.\n- Goal source: the documents listed above, in that priority. None present: ask the user for the goal in one or two sentences and use their words verbatim. Do not write the goal yourself from memory of the build.\n\n## 2. Spawn the reviewer\n\nUse one general-purpose subagent. Pass only the target, the goal document paths (or the user's goal text), and this brief. **Do not include your own summary of what was built or why**; that is the bias this step exists to remove.\n\n> You are reviewing changes you did not write. Target: <target>. Goal: <paths or text>.\n> Read the goal, then the changes and enough surrounding code to judge them. Run the project's tests if that helps you confirm a finding.\n> Report only gaps that affect correctness or the stated requirements:", "skills/ship-it/SKILL.md": "---\nname: ship-it\ndescription: Runs a pre-deploy gate on the current branch (clean install, typecheck, lint, full tests, production build, env vars, secrets, migrations, rollback) and returns a GO / NO-GO report backed by real command output. Triggers on \"ship it\", \"ready to deploy?\", \"pre-deploy check\", \"can we release\", \"safe to merge to main\", or before a deploy, release tag, or merge to production.\nargument-hint: \"[base branch, default main]\"\nallowed-tools: Bash(git status *) Bash(git diff *) Bash(git log *) Bash(git branch *)\n---\n\n# Ship It\n\nYour job is to find reasons not to ship. A check is PASS only if you ran it in this session and saw it pass.\n\n## Current state\n- Branch: !`git branch --show-current 2>/dev/null || true`\n- Uncommitted: !`git status --short 2>/dev/null || true`\n- Recent commits: !`git log --oneline -10 2>/dev/null || true`\n\nBase branch: $ARGUMENTS (if empty: `main` or `master`, whichever exists; ask once if neither).\n\n## Gate\n\n1. **Tree matches the deploy.** Uncommitted changes are a finding. Either commit them (they ship) or stash them (they don't) before checking anything.\n2. **Commands come from CI.** Read `.github/workflows/*`, `.gitlab-ci.yml`, or equivalent first; mirror what CI runs. Fall back to package scripts, Makefile, CLAUDE.md. List the exact commands before running them.\n3. **Mechanical checks, cheapest first:** frozen-lockfile install, typecheck, lint, the full test suite (never a filtered subset), production build. A check with no configured command is \"not configured\", never PASS.\n4. **Env vars.** Find env vars read by code added in this diff. Any not in `.env.example` or deploy config becomes a condition the human must confirm is set in the target environment; you cannot verify that, so say so. Flag debug flags, disabled auth, or request-body logging left on.\n5. **Secrets.** Run `gitleaks` or `trufflehog` on the diff range if installed; otherwise grep `git diff <base>...HEAD` for key/token/password/private-key patterns and check for committed `.env`, `*.pem`, `*.key`, service-account JSON. A real secret anywhere in history is NO-GO; the fix is rotation, not deletion.\n6. **Migrations.** Destructive DDL (DROP, RENAME, type change, NOT NULL without default on a populated table) in the same deploy as the code that needs it is NO-GO unless the user confirms the table is empty or downtime is accepted. Hand off to the `db-migration` skill.\n7. **Diff read.** One pass over the full diff for: `.only(`/`fit(`/`fdescribe(`, newly skipped tests, TODO/FIXME added in this diff, commented-out blocks, hardcoded localhost URLs, feature flags defaulting on.\n8. **Rollback.** Write concrete steps: what reverts the deploy, whether the migration must be reverted first, whether data restoration is needed.\n\nIf the diff has not had a bug review, recommend the built-in `/code-review` for a fresh-eyes pass before merging.\n\n## Verdict", "skills/bug-hunt/SKILL.md": "---\nname: bug-hunt\ndescription: Diagnoses and fixes bugs by evidence - reproduce first, rank hypotheses, bisect regressions, write a failing test, apply a minimal root-cause fix, and prove it with the test suite. Triggers on bug reports, errors, crashes, stack traces, regressions, flaky tests, \"this used to work\", \"why is X happening\", or \"fix this error\".\nargument-hint: \"[error message, symptom, or issue link]\"\n---\n\n# Bug Hunt\n\nBug: $ARGUMENTS\n\nThe governing rule: **no edits to production code until you have reproduced the bug and can name its cause at a file and line.**\n\n## 1. Reproduce\n\n1. Write down expected vs. actual (exact error text) and the conditions. If there is a stack trace, read every frame in project code before forming an opinion.\n2. Find the smallest command that shows the failure: one test, a curl call, a script. Run it and confirm it is the failure the user described.\n3. Cannot reproduce: stop. Report what you tried and ask for the missing condition (data, env var, OS, timing). Do not fix a bug you have not seen.\n4. Flaky: loop it (`for i in $(seq 1 50); do <cmd> >/dev/null 2>&1 || echo \"FAIL $i\"; done`) and record the failure rate.\n\n## 2. Hypothesize\n\nList 2 to 5 causes, each with the observation that would confirm or kill it:\n\n```\nH1 (likely): cache returns stale user after role update\n   test: log cache key+value on read after update; expect old role\nH2: race between the two writes in saveProfile\n   test: add 100ms delay before the second write; failure rate should rise\n```\n", "skills/context-saver/SKILL.md": "---\nname: context-saver\ndescription: Keeps Claude Code sessions lean - chooses between /clear, /compact with a focus, /rewind, /btw, and a HANDOFF.md restart, delegates broad searches to subagents, and trims reads and command output. Triggers on usage limits, \"running out of context\", a long or sluggish session, \"save context\", \"why is my session so heavy\", or switching tasks mid-session.\n---\n\n# Context Saver\n\nEvery token in the conversation is reprocessed on every turn, and answers degrade as the window fills. Keep the working context small and make restarts cheap.\n\n## Habits (always on)\n\n- **Locate before reading.** Grep/Glob to the file and line range, then read that range. Do not re-read a file you already read this session unless it changed. Never read lockfiles, build output, minified bundles, large fixtures, or full logs; use `head`, `tail`, `grep`, `wc -l`.\n- **Trim output at the source.** `npm test 2>&1 | tail -40`, `pytest -q`, `| grep -E \"FAIL|Error\"`, `jq` for the fields you need.\n- **Delegate broad searches.** \"Where is auth handled\", \"every caller of X\", \"how does billing work\" go to a subagent (Explore or general-purpose); it reads the many files in its own context and returns the conclusion. Search yourself only when you expect one or two hits.\n- **Answer proportionally.** Show the changed region, not whole files. Do not restate code you just wrote or echo the plan back.\n\n## Which tool to recommend\n\nYou cannot run these for the user. Recommend the right one and say why.\n\n| Situation | Recommend |\n|-----------|-----------|\n| Current task done, next one unrelated | `/clear` |\n| Two failed corrections on the same problem; the history is now misleading | `/clear`, then a fresh prompt stating what was learned |\n| Task still in progress, history long | `/compact <focus>` |\n| Went down a wrong path; an earlier point was good | `/rewind` (or Esc Esc) to restore that checkpoint (conversation, code, or both) or summarize from it |\n| Quick side question that should not enter the history | `/btw <question>` |\n| \"Why is this session so heavy?\" | `/context` to see what is loaded |\n| Multi-session task, or ending mid-task | `/handoff`, then `/clear`, then `/pickup` |\n", "agents/researcher.md": "---\nname: researcher\ndescription: Read-only codebase investigator that answers \"where is X\", \"how does Y work\", \"what calls Z\", and \"what would I touch to change W\" with a short summary and path:line references instead of file dumps. Use proactively before editing unfamiliar code, when the user says \"investigate\" or \"figure out how\", and any time answering would otherwise mean reading more than 3 files in the main conversation.\ntools: Read, Grep, Glob\nmodel: haiku\n---\n\nYou answer one question about the codebase and return a compact, accurate summary. The caller delegated to you so the files you read stay out of their context. A long answer defeats the purpose; a wrong answer is worse than a short one. You never modify anything.\n\n## Process\n\n1. **Define done.** Decide what a complete answer contains: a location, a flow, a list of call sites, or a yes/no. Stop searching once you have it.\n2. **Search wide, then narrow.** Glob for likely file names. Grep for identifiers, route strings, error messages, config keys, and env var names. Try naming variants (camelCase, snake_case, kebab-case, plural and singular).\n3. **Skip noise.** Ignore `node_modules`, `dist`, `build`, `.next`, `.venv`, `venv`, `__pycache__`, `target`, `vendor`, `coverage`, and lockfiles.\n4. **Read only what you need.** Read targeted line ranges, not whole large files. Follow imports and calls until the question is answered, then stop.\n5. **Check before you claim.** Every path, line number, and symbol in your answer must be something you actually read. Mark anything inferred as \"(inferred)\".\n\n## Output\n\nKeep the whole response under 300 words unless the caller asked for more.\n\n    Answer\n    2 to 4 sentences that directly answer the question.\n\n    Key locations (max 8)\n    - src/auth/session.ts:40-72 - createSession(): issues the JWT, sets the cookie\n    - src/middleware.ts:12 - reads the cookie on every request\n\n    Flow (only if the question is about behavior)\n    1. Request hits middleware.ts:12", "agents/code-reviewer.md": "---\nname: code-reviewer\ndescription: Reviews a diff in a fresh context and reports only issues that affect correctness, security, data safety, or the stated requirements, ranked by severity. Read-only. Use proactively after any change that touches more than one file or any auth, payment, data, or migration code, before committing or opening a PR, and whenever the user asks for a review or \"is this safe to ship\".\ntools: Read, Grep, Glob, Bash\nmodel: sonnet\n---\n\nYou review recently changed code and report problems that would cause wrong behavior, a security hole, lost data, or a missed requirement. You never edit files.\n\nBash is for read-only commands only: `git diff`, `git log`, `git status`, `git show`, and fast type-check or lint commands. Never run anything that writes files, installs, migrates, commits, pushes, or deploys.\n\n## Why the bar is high\n\nA reviewer asked to find problems will report some even when the code is sound. Chasing every finding produces over-engineering: extra layers, defensive code, tests for cases that cannot happen. Report only what you can tie to a concrete failure. Zero findings is a valid result.\n\n## Scope\n\n1. What to review: the files, diff, or commit range the caller named. Otherwise `git diff HEAD` plus `git diff --cached`. If there is no git repo and no files were named, ask which files and stop.\n2. What to review against: requirements the caller gave, else `SPEC.md` or `PLAN.md` in the repo root, else the commit or PR description. Name the source you used.\n3. Read the changed lines plus the callers and callees their behavior depends on. Do not review untouched code.\n\n## What counts as a finding\n\nReport it only if it fits one of these and you can name the input or condition that triggers it:\n\n- **Correctness**: wrong logic, a null/empty/error path that can actually occur, async or race bugs, swallowed errors.\n- **Security**: injection (SQL, shell, HTML, path), missing authorization check, secrets in code, user input reaching eval/exec/raw HTML, SSRF.\n- **Data safety**: destructive migration, unguarded delete, multi-step write with no transaction where partial failure corrupts state.\n- **Contract break**: changed signature, response shape, schema, env var, or config key with callers not updated. Confirm the stale callers with Grep first.\n- **Requirement gap**: something the spec requires that the diff does not do, or a change outside the task's scope.", "hooks/verify-gate.py": "#!/usr/bin/env python3\n\"\"\"\nverify-gate.py - Claude Code Stop hook. Claude cannot finish a turn until\nyour verification command passes.\n\nWhere the command comes from (first match wins; never guessed):\n  1. env var LOCKED_IN_VERIFY\n  2. first non-blank, non-# line of $CLAUDE_PROJECT_DIR/.claude/verify.txt\nIf neither exists, the hook does nothing.\n\nBehavior:\n  - Skips if the project is a git repo with no uncommitted changes, or if\n    nothing has changed since the last passing run (cached per project).\n    Outside git it always runs.\n  - Runs the command (shell=True, cwd = project dir). On failure, exits 2 and\n    sends the last 40 lines of output to Claude with an instruction to fix\n    the failures, so Claude keeps working instead of stopping.\n  - Loop safety: after 4 consecutive blocks it lets Claude stop (Claude Code\n    itself gives up after 8). Runtime is capped at LOCKED_IN_VERIFY_TIMEOUT\n    seconds (default 300); a timeout counts as a failure. The whole process\n    tree is killed on timeout.\n  - Any unexpected error -> exit 0. This hook never breaks a session.\n\nStandard library only. Windows, macOS, Linux.\n\"\"\"", "hooks/block-dangerous.py": "#!/usr/bin/env python3\n\"\"\"\nblock-dangerous.py - Claude Code PreToolUse hook for Bash (and PowerShell).\n\nBlocks shell commands that can destroy data or compromise the machine:\n  - recursive rm / Remove-Item on /, ~, ., .., *, drive roots, system dirs,\n    home directories, or \"$VAR/\" paths that turn into / when VAR is empty\n  - git push --force (or +refspec, or branch deletion) to main/master\n  - git reset --hard, git clean -f\n  - DROP TABLE / DROP DATABASE / DROP SCHEMA / TRUNCATE TABLE, dropdb,\n    prisma migrate reset, prisma db push --force-reset\n  - piping a download into a shell (curl ... | sh, iwr ... | iex, bash <(curl ...))\n  - chmod -R 777\n  - mkfs, dd to a raw disk, fork bombs\n\nProtocol: reads the hook JSON from stdin. Exit 0 = allow. Exit 2 = block,\nand the message on stderr is shown to Claude as the reason.\n\nStdlib only. Works on Windows, macOS, and Linux.\n\"\"\"\n\nimport json\nimport os\nimport re\nimport subprocess\nimport sys\n\n# Branches that must never be force-pushed or deleted. Edit to taste.\nPROTECTED_BRANCHES = {\"main\", \"master\"}\n", "hooks/settings.example.json": "{\n  \"hooks\": {\n    \"PreToolUse\": [\n      {\n        \"matcher\": \"Bash|PowerShell\",\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"python3 \\\"${CLAUDE_PROJECT_DIR}/.claude/hooks/block-dangerous.py\\\"\",\n            \"timeout\": 10\n          },\n          {\n            \"type\": \"command\",\n            \"command\": \"python3 \\\"${CLAUDE_PROJECT_DIR}/.claude/hooks/protect-secrets.py\\\"\",\n            \"timeout\": 10\n          }\n        ]\n      },\n      {\n        \"matcher\": \"Read|Edit|MultiEdit|Write|NotebookEdit|Grep\",\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"python3 \\\"${CLAUDE_PROJECT_DIR}/.claude/hooks/protect-secrets.py\\\"\",\n            \"timeout\": 10\n          }\n        ]\n      }\n    ],\n    \"PostToolUse\": [\n      {\n        \"matcher\": \"Edit|MultiEdit|Write\",\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"python3 \\\"${CLAUDE_PROJECT_DIR}/.claude/hooks/auto-format.py\\\"\",\n            \"timeout\": 90\n          }\n        ]\n      }\n    ],\n    \"Stop\": [\n      {\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"python3 \\\"${CLAUDE_PROJECT_DIR}/.claude/hooks/verify-gate.py\\\"\",\n            \"timeout\": 330\n          },\n          {\n            \"type\": \"command\",\n            \"command\": \"python3 \\\"${CLAUDE_PROJECT_DIR}/.claude/hooks/notify-done.py\\\"\",\n            \"timeout\": 15\n          }\n        ]\n      }\n    ]\n  }\n}", "claude-md-templates/nextjs-app.md": "# <PROJECT_NAME>\n\nNext.js <VERSION> App Router app with TypeScript. <ONE_LINE_WHAT_IT_DOES>\n\n## Commands\n- Dev server: `npm run dev` (port 3000). If it is already running, do not start a second one.\n- Type-check: `npx tsc --noEmit`\n- Lint: `npm run lint`\n- Tests: `<npm test -- --run>`\n- Production build: `npm run build`. It fails on type and lint errors that `dev` ignores.\n- DB: `<npx prisma migrate dev --name <change>>` to create a migration. Never `migrate reset`.\n\n## Conventions\n- App Router only. Never add a `pages/` directory, `getServerSideProps`, or `getStaticProps`.\n- Components are Server Components by default. Put `\"use client\"` on the smallest interactive leaf component, never on a `page.tsx` or `layout.tsx`.\n- Mutations go through Server Actions in `<app/actions/>`. Add `app/api/*` route handlers only for webhooks or external callers.\n- Modules that touch the DB or secrets start with `import \"server-only\";`.\n- Import through the `@/` alias, not long relative paths.\n- Styling: <Tailwind; no CSS-in-JS>. UI primitives come from `<components/ui/>`; check there before building a new one.\n\n## Gotchas\n- `params`, `searchParams`, `cookies()`, and `headers()` are async. Await them.\n- Only `NEXT_PUBLIC_*` variables reach the browser, and anything with that prefix is public. Secrets never get the prefix.\n- Add every new env var to `.env.example` with a placeholder value.\n\n## Verify before saying done\nRun `npx tsc --noEmit && npm run lint && npm run build` and show the result. For UI changes, also load the page in the dev server and check the browser console for errors and hydration warnings.\nPut the same command in `.claude/verify.txt` so the verify-gate hook enforces it.\n\n## Mistakes to avoid\n<!-- Every time Claude gets something wrong in this repo, add one line here. -->\n- Adding `\"use client\"` to a page to silence a server/client error. Extract the interactive part into its own client component instead.\n- Importing a server module (db client, env secrets) into a client component, which leaks it into the bundle.\n- Fetching the app's own `/api/*` routes from a Server Component. Call the function directly.\n- Using `useEffect` + `fetch` for data a Server Component could load.\n- Claiming done after `npm run dev` works. Only `npm run build` catches the errors that break deploys.", "PLAYBOOK.md": "# The Locked In Method\n\nClaude Code has one hard constraint: its context window fills up as you work, and output quality drops as it fills. It has one lever that matters more than any other: a check Claude can run that says pass or fail. Claude stops when work *looks* done; a check lets it stop only when work *is* done. Everything in this kit exists to protect the context window or to put a check in the loop.\n\nThis method is built from Anthropic's published best-practices guide for Claude Code and the tips Boris Cherny (who created Claude Code) has shared publicly. Links are in Sources at the end. The Locked In Kit is an independent product and is not affiliated with or endorsed by Anthropic or Boris Cherny.\n\n---\n\n## 1. The Locked In Loop\n\nSmall tasks run through all five steps in one prompt. Big features may take a session per step.\n\n### Step 1: Lock the goal\n\nWrite down what \"done\" means and the one command that proves it. A goal without a check is a wish.\n\n- **Small task:** put it in the prompt. \"Add a `--json` flag to the export command. Done when `npm test` passes and `node cli.js export --json` prints valid JSON.\"\n- **Big feature:** let Claude interview you about edge cases and tradeoffs you have not thought through, then write a spec.\n\nA good spec names the files and interfaces involved, states what is out of scope, and ends with an end-to-end verification step. Time spent making the spec precise pays off more than time spent watching the build.\n\n**Kit:** `/lock-in` runs the interview, writes `SPEC.md` with a verification command, and saves that command to `.claude/verify.txt` so the rest of the loop can enforce it.\n\n### Step 2: Plan\n\nPress **Shift+Tab** until the status bar shows plan mode. Claude reads and proposes but does not edit. Ask for a plan that names files and a check per step. Press **Ctrl+G** to open the plan in your editor and fix it directly before approving.\n\nSkip planning when you could describe the diff in one sentence (a typo, a log line, a rename). Planning is for uncertain approaches, multi-file changes, and unfamiliar code.\n\nIf the interview and planning used a lot of context, reset before building (Step 5) so implementation starts clean with the spec and plan on disk.\n\n**Kit:** `/lock-in` plans after the spec. The `architect` subagent produces a step-by-step plan with risks and a verify command without touching files.\n\n### Step 3: Build against the check\n\nClaude implements one step, runs the check, reads the result, and fixes before moving on. The check is whatever returns pass or fail: tests, a build, a type-check, a script that diffs output against a fixture, a screenshot compared to a design.\n\nBoris Cherny calls this feedback loop probably the most important thing for good results, and estimates it improves the final result 2-3x. Asking for it in the prompt works most of the time. A hook makes it work every time, because hooks are deterministic and CLAUDE.md is only advice.\n\n**Kit:**"};
+  /*KIT_DATA_END*/
+
+  var KIND = { skills: "Skill", agents: "Subagent", hooks: "Hook", "claude-md-templates": "Template" };
+  var DEST = { skills: "~/.claude/skills/", agents: "~/.claude/agents/", hooks: "<project>/.claude/hooks/", "claude-md-templates": "<project>/CLAUDE.md" };
+
+  var tree = document.getElementById("tree");
+  var html = '<div class="root">locked-in-kit/</div>';
+  Object.keys(FILES).forEach(function (dir) {
+    var open = (dir === "skills" || dir === "hooks") ? " open" : "";
+    html += '<details' + open + '><summary><span class="name">' + dir + '/</span><span class="n">' + FILES[dir].length + '</span></summary>';
+    FILES[dir].forEach(function (f) {
+      var key = dir + "/" + f[0];
+      html += '<button type="button" data-key="' + esc(key) + '" data-dir="' + dir + '">' + esc(f[0]) + (EXCERPTS[key] ? '<span class="has" aria-label="excerpt available"></span>' : "") + '</button>';
+    });
+    html += '</details>';
+  });
+  html += '<button type="button" class="solo" data-key="PLAYBOOK.md" data-dir="">PLAYBOOK.md</button>';
+  html += '<button type="button" class="solo" data-key="README.md" data-dir="">README.md</button>';
+  tree.innerHTML = html;
+
+  var vPath = document.getElementById("vPath"), vKind = document.getElementById("vKind"),
+      vDesc = document.getElementById("vDesc"), vCode = document.getElementById("vCode"), vFoot = document.getElementById("vFoot");
+
+  function highlight(text, isPy) {
+    var lines = text.split("\n");
+    var inFm = false, fmCount = 0;
+    return lines.map(function (l, i) {
+      var h = esc(l);
+      if (l === "---") { fmCount++; inFm = fmCount === 1; return '<span class="fm">---</span>'; }
+      if (inFm) {
+        var m = h.match(/^([a-z-]+):(.*)$/);
+        return m ? '<span class="key">' + m[1] + '</span>:<span class="fm">' + m[2] + '</span>' : '<span class="fm">' + h + '</span>';
+      }
+      if (isPy && /^\s*#/.test(l)) return '<span class="cm">' + h + '</span>';
+      if (!isPy && /^#{1,3} /.test(l)) return '<span class="h">' + h + '</span>';
+      h = h.replace(/\$ARGUMENTS/g, '<span class="arg">$ARGUMENTS</span>');
+      h = h.replace(/(&quot;[a-zA-Z]+&quot;)(\s*:)/g, '<span class="key">$1</span>$2');
+      return h;
+    });
+  }
+
+  function descFor(key) { return DESCS[key] || ""; }
+
+  function show(key, dir) {
+    tree.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-current", b.getAttribute("data-key") === key ? "true" : "false"); });
+    var slash = key.lastIndexOf("/");
+    vPath.innerHTML = slash > -1 ? '<span class="dir">' + esc(key.slice(0, slash + 1)) + '</span>' + esc(key.slice(slash + 1)) : esc(key);
+    vKind.textContent = dir ? KIND[dir] : "Guide";
+    vDesc.textContent = descFor(key);
+    var ex = EXCERPTS[key];
+    if (ex) {
+      var rows = highlight(ex, /\.py$/.test(key)).map(function (h, i) { return '<tr><td class="no">' + (i + 1) + '</td><td>' + (h || " ") + '</td></tr>'; }).join("");
+      vCode.innerHTML = '<table>' + rows + '<tr><td class="no"></td><td class="more">… continues in the kit</td></tr></table>';
+      vFoot.textContent = dir ? "Installs to " + DEST[dir] : "Kit root";
+    } else {
+      vCode.innerHTML = '<table><tr><td class="no">·</td><td class="cm">Full file ships in the kit. Files with a dot in the tree show an excerpt here.</td></tr></table>';
+      vFoot.textContent = dir ? "Installs to " + DEST[dir] : "Kit root";
+    }
+  }
+
+  tree.addEventListener("click", function (e) {
+    var b = e.target.closest("button");
+    if (b) show(b.getAttribute("data-key"), b.getAttribute("data-dir"));
+  });
+  show("skills/lock-in/SKILL.md", "skills");
+
+  /* ================= install tabs ================= */
+  var SNIPS = {
+    unix: "mkdir -p ~/.claude/skills ~/.claude/agents\ncp -r skills/* ~/.claude/skills/\ncp agents/*.md ~/.claude/agents/",
+    win: "$c = \"$HOME\\.claude\"\nNew-Item -ItemType Directory -Force \"$c\\skills\",\"$c\\agents\" | Out-Null\nCopy-Item -Recurse -Force skills\\* \"$c\\skills\\\"\nCopy-Item -Force agents\\*.md \"$c\\agents\\\""
+  };
+  var snipText = document.getElementById("snipText");
+  var tabs = { unix: document.getElementById("tab-unix"), win: document.getElementById("tab-win") };
+  function setTab(k) {
+    snipText.textContent = SNIPS[k];
+    tabs.unix.setAttribute("aria-selected", k === "unix");
+    tabs.win.setAttribute("aria-selected", k === "win");
+  }
+  tabs.unix.addEventListener("click", function () { setTab("unix"); });
+  tabs.win.addEventListener("click", function () { setTab("win"); });
+  setTab(/Win/.test(navigator.platform || navigator.userAgent) ? "win" : "unix");
+
+  var copyBtn = document.getElementById("copyBtn");
+  copyBtn.addEventListener("click", function () {
+    function done(ok) { copyBtn.textContent = ok ? "Copied" : "Select + copy"; setTimeout(function () { copyBtn.textContent = "Copy"; }, 1600); }
+    try {
+      navigator.clipboard.writeText(snipText.textContent).then(function () { done(true); }, function () { selectText(); done(false); });
+    } catch (e) { selectText(); done(false); }
+  });
+  function selectText() {
+    var r = document.createRange(); r.selectNodeContents(snipText);
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  }
+})();
+</script>
+</body>
+</html>
