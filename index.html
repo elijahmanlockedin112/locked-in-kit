@@ -477,8 +477,8 @@
 <body>
 <div class="shell">
   <div class="promo" role="note">
-    <span class="promo-tag">Launch offer</span>
-    <span>30% off for the <b>first 20 buyers</b> with code <button type="button" class="code" data-copy-code>LAUNCH</button> &nbsp;<s>$19</s> <b>$13.30</b></span>
+    <span class="promo-tag" data-offer-label>Launch offer</span>
+    <span data-offer-text>30% off for the <b>first 20 buyers</b> with code <button type="button" class="code" data-copy-code>LAUNCH</button> &nbsp;<s>$19</s> <b>$13.30</b></span>
     <span class="promo-hint" data-copy-hint>Click the code to copy it. It's also copied when you click Get the kit.</span>
   </div>
 
@@ -489,7 +489,7 @@
     </a>
     <div class="bar-meta">
       <span class="mono hide-sm">v1.0 · 43 files · for Claude Code</span>
-      <a class="btn btn-sm" href="https://payhip.com/b/lsyVE" data-goatcounter-click="buy-header" data-goatcounter-title="Buy: header">Get the kit · <s>$19</s> $13.30</a>
+      <a class="btn btn-sm" href="https://payhip.com/b/lsyVE" data-goatcounter-click="buy-header" data-goatcounter-title="Buy: header">Get the kit · <s>$19</s> <span class="price-now">$13.30</span></a>
     </div>
   </header>
 
@@ -500,7 +500,7 @@
         <h1>Stop babysitting<span class="thin">Claude Code.</span></h1>
         <p class="lede">Claude can't say "done" until your tests pass, can't touch your secrets, and uses less of your limit. Copy one folder into <code>~/.claude</code> and you're set up in two minutes.</p>
         <div class="cta-row">
-          <a class="btn" href="https://payhip.com/b/lsyVE" data-goatcounter-click="buy-hero" data-goatcounter-title="Buy: hero">Get the kit <span class="price-tag"><s>$19</s> $13.30</span></a>
+          <a class="btn" href="https://payhip.com/b/lsyVE" data-goatcounter-click="buy-hero" data-goatcounter-title="Buy: hero">Get the kit <span class="price-tag"><s>$19</s> <span class="price-now">$13.30</span></span></a>
           <a class="link" href="#inside">Look inside first</a>
         </div>
         <a class="stats" href="#kit" aria-label="What's inside: 18 skills, 6 agents, 5 hooks, 8 templates, 1 playbook. See everything.">
@@ -748,7 +748,7 @@
 
     <section id="buy" aria-labelledby="buy-h">
       <div class="buy">
-        <h2 id="buy-h"><span class="was">$19</span>$13.30<small class="launch-line">With launch code <b>LAUNCH</b>: 30% off for the first 20 buyers. Enter it at checkout; clicking the button below copies it for you.</small><small>One payment. That's about three days of a Max 20x plan, for a setup you'll use every day.</small></h2>
+        <h2 id="buy-h"><span class="was">$19</span><span class="price-now">$13.30</span><small class="launch-line" data-offer-line>With launch code <b>LAUNCH</b>: 30% off for the first 20 buyers. Enter it at checkout; clicking the button below copies it for you.</small><small>One payment. That's about three days of a Max 20x plan, for a setup you'll use every day.</small></h2>
         <div>
           <ul class="buy-list">
             <li><span>Skills that load when the task matches</span><span>12</span></li>
@@ -759,7 +759,7 @@
             <li><span>The Locked In Method playbook</span><span>1</span></li>
             <li><span>Future additions to the kit</span><span>free</span></li>
           </ul>
-          <a class="btn" href="https://payhip.com/b/lsyVE" data-goatcounter-click="buy-pricing" data-goatcounter-title="Buy: pricing">Get Locked In <span class="price-tag"><s>$19</s> $13.30</span></a>
+          <a class="btn" href="https://payhip.com/b/lsyVE" data-goatcounter-click="buy-pricing" data-goatcounter-title="Buy: pricing">Get Locked In <span class="price-tag"><s>$19</s> <span class="price-now">$13.30</span></span></a>
           <p class="fine">If it doesn't save you time, ask within 14 days for a full refund.</p>
         </div>
       </div>
@@ -997,8 +997,43 @@
   show("skills/lock-in/SKILL.md", "skills");
 
 
-  /* ================= launch code copy ================= */
-  var CODE = "LAUNCH";
+  /* ================= offer + partner links =================
+     Default: the LAUNCH offer. A partner link like
+       ?ref=matt&aff=123456789&code=MATT15&off=15&name=Matt
+     sends Buy buttons to that affiliate's Payhip link, shows their code,
+     and is remembered for 30 days (Payhip's affiliate cookie window). */
+  var BASE_PRICE = 19, BUY_URL = "https://payhip.com/b/lsyVE";
+  var OFFER = { code: "LAUNCH", off: 30, label: "Launch offer", audience: "the <b>first 20 buyers</b>" };
+  var AFF = "";
+  (function () {
+    var q, saved = null, cur = null;
+    try { q = new URLSearchParams(location.search); } catch (e) { return; }
+    try { saved = JSON.parse(localStorage.getItem("li_partner") || "null"); } catch (e) {}
+    if (saved && !(saved.exp > Date.now())) saved = null;
+    if (q.get("aff") || q.get("code")) {
+      cur = { aff: q.get("aff") || "", code: q.get("code") || "", off: q.get("off") || "", name: q.get("name") || "", exp: Date.now() + 30 * 864e5 };
+      try { localStorage.setItem("li_partner", JSON.stringify(cur)); } catch (e) {}
+    } else { cur = saved; }
+    if (!cur) return;
+    if (/^\d{3,20}$/.test(cur.aff)) AFF = cur.aff;
+    var off = parseInt(cur.off, 10);
+    if (/^[A-Za-z0-9_-]{2,24}$/.test(cur.code) && off >= 1 && off <= 90) {
+      var name = /^[A-Za-z0-9 ._-]{1,30}$/.test(cur.name) ? cur.name : "";
+      OFFER = { code: cur.code.toUpperCase(), off: off, label: name ? name + "'s audience" : "Partner offer", audience: name ? name + "'s audience" : "you" };
+    }
+  })();
+  var CODE = OFFER.code;
+
+  function money(n) { var s = n.toFixed(2); return "$" + (s.slice(-3) === ".00" ? s.slice(0, -3) : s); }
+  var NOW = money(Math.round(BASE_PRICE * (100 - OFFER.off)) / 100);
+  if (AFF) document.querySelectorAll('a[href^="' + BUY_URL + '"]').forEach(function (a) { a.href = BUY_URL + "/" + AFF; });
+  document.querySelectorAll(".price-now").forEach(function (el) { el.textContent = NOW; });
+  var lbl = document.querySelector("[data-offer-label]"); if (lbl) lbl.textContent = OFFER.label;
+  var txt = document.querySelector("[data-offer-text]");
+  if (txt) txt.innerHTML = OFFER.off + "% off for " + OFFER.audience + ' with code <button type="button" class="code" data-copy-code>' + OFFER.code + "</button> &nbsp;<s>" + money(BASE_PRICE) + "</s> <b>" + NOW + "</b>";
+  var line = document.querySelector("[data-offer-line]");
+  if (line) line.innerHTML = "With code <b>" + OFFER.code + "</b>: " + OFFER.off + "% off for " + OFFER.audience + ". Enter it at checkout; clicking the button below copies it for you.";
+
   function copyCode() {
     try { if (navigator.clipboard) navigator.clipboard.writeText(CODE).catch(function () {}); } catch (e) {}
   }
@@ -1016,8 +1051,8 @@
   if (codeBtn) codeBtn.addEventListener("click", function () {
     try {
       navigator.clipboard.writeText(CODE).then(function () { if (hint) hint.textContent = "Copied. Paste it in the coupon field at checkout."; },
-        function () { if (hint) hint.textContent = "Type LAUNCH in the coupon field at checkout."; });
-    } catch (e) { if (hint) hint.textContent = "Type LAUNCH in the coupon field at checkout."; }
+        function () { if (hint) hint.textContent = "Type " + CODE + " in the coupon field at checkout."; });
+    } catch (e) { if (hint) hint.textContent = "Type " + CODE + " in the coupon field at checkout."; }
   });
 
   /* ================= install tabs ================= */
